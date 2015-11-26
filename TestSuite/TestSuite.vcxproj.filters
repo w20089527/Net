@@ -16,6 +16,9 @@
     <Filter Include="socket">
       <UniqueIdentifier>{d514bc60-3e3f-4486-b099-488502d07758}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{515a306d-b3ba-42af-9d7d-a6fbc439a037}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="DatagramSocketTest.cpp">
       <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="ZipTest.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
