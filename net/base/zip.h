@@ -18,8 +18,19 @@
 
 #pragma once
 
+#include <string>
+
 namespace base {
 namespace zip {
-    bool Compress(char* dst, int dstLength, const char* src, int srcLength);
+    
+    size_t GetCompressLength(size_t srcLength);
+    size_t Compress(char* dst, size_t dstLength, const char* src, size_t srcLength);
+    std::string Compress(const char* data, size_t length);
+    std::string Compress(const std::string& data);
+
+    size_t Decompress(char* dst, size_t dstlen, const char* src, size_t srclen);
+    std::string Decompress(const char* data, size_t length);
+    std::string Decompress(const std::string& data);
+
 } // !zip
 } // !base
