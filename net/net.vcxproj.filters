@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{92a6378b-fdd3-49be-bcc1-fa5c8e6e71f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{69e7d0ce-86db-4cb7-9582-2be74e0b50cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="base\zip.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\DatagramSocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\DatagramSocketImpl.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\ServerSocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\ServerSocketImpl.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\Socket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\SocketAddress.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\SocketImpl.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\StreamSocket.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="socket\StreamSocketImpl.cpp">
+      <Filter>socket</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="socket\DatagramSocket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\DatagramSocketImpl.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\ServerSocket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\ServerSocketImpl.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\Socket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\SocketAddress.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\SocketDefs.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\SocketImpl.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\StreamSocket.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\StreamSocketImpl.h">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="base\zip.h">
+      <Filter>base</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
