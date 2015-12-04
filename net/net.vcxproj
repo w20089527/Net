@@ -146,6 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="base\strings\utils.cpp" />
     <ClCompile Include="base\zip.cpp" />
     <ClCompile Include="socket\DatagramSocket.cpp" />
     <ClCompile Include="socket\DatagramSocketImpl.cpp" />
@@ -158,7 +159,10 @@
     <ClCompile Include="socket\StreamSocketImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="base\strings\utils.h" />
     <ClInclude Include="base\zip.h" />
+    <ClInclude Include="http\httpdefs.h" />
+    <ClInclude Include="http\url.h" />
     <ClInclude Include="socket\DatagramSocket.h" />
     <ClInclude Include="socket\DatagramSocketImpl.h" />
     <ClInclude Include="socket\ServerSocket.h" />

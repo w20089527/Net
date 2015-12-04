@@ -19,6 +19,9 @@
     <Filter Include="base">
       <UniqueIdentifier>{515a306d-b3ba-42af-9d7d-a6fbc439a037}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base\strings">
+      <UniqueIdentifier>{29b5eaa2-812a-401d-a979-07f9ee7bb488}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -52,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="ZipTest.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="UtilsTest.cpp">
+      <Filter>base\strings</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

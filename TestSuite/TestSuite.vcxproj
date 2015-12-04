@@ -172,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UDPEchoServer.cpp" />
+    <ClCompile Include="UtilsTest.cpp" />
     <ClCompile Include="ZipTest.cpp" />
   </ItemGroup>
   <ItemGroup>

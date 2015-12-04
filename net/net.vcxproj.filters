@@ -11,6 +11,12 @@
     <Filter Include="socket">
       <UniqueIdentifier>{69e7d0ce-86db-4cb7-9582-2be74e0b50cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="http">
+      <UniqueIdentifier>{cd0d5673-25ae-4b13-99ee-3a88627fd37c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\strings">
+      <UniqueIdentifier>{8af4608f-30fc-4592-bc01-74c92508768e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -46,6 +52,9 @@
     <ClCompile Include="socket\StreamSocketImpl.cpp">
       <Filter>socket</Filter>
     </ClCompile>
+    <ClCompile Include="base\strings\utils.cpp">
+      <Filter>base\strings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\DatagramSocket.h">
@@ -80,6 +89,15 @@
     </ClInclude>
     <ClInclude Include="base\zip.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="http\httpdefs.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\url.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="base\strings\utils.h">
+      <Filter>base\strings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
