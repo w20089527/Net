@@ -24,11 +24,11 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestSuite
 {
-    TEST_CLASS(ZipTest)
+    TEST_CLASS(zip_Test)
     {
     public:
 
-        TEST_METHOD(TestCompress)
+        TEST_METHOD(Test_Compress)
         {
             std::string data("hello world!, hello hello hello hello hello hello hello hello world");
             std::string strCompressData = base::zip::Compress(data);
@@ -36,7 +36,7 @@ namespace TestSuite
             Assert::IsTrue(data.length() == std::stoul(strCompressData.substr(0, 8)));
         }
 
-        TEST_METHOD(TestDecompress)
+        TEST_METHOD(Test_Decompress)
         {
             std::string data("hello world ! I am ZipTest.");
             std::string strCompressData = base::zip::Compress(data);
