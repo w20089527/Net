@@ -24,6 +24,24 @@
 namespace base {
 namespace strings {
 
+bool Equal(const std::string& str1, const std::string& str2, bool bIgnoreCase /*= false*/)
+{
+    if (str1.length() != str2.length())
+        return false;
+    auto fnEqual = bIgnoreCase ? std::function<bool(char, char)>(
+                                    [](char c1, char c2) -> bool {
+                                        return std::tolower(c1, std::locale()) == std::tolower(c2, std::locale());
+                                    })
+                               : std::function<bool(char, char)>(
+                                    [](char c1, char c2) -> bool { return c1 == c2; });
+    for (size_t i = 0; i < str1.length(); ++i)
+    {
+        if (!fnEqual(str1[i], str2[i]))
+            return false;
+    }
+    return true;
+}
+
 template<typename InputIterator1, typename InputIterator2>
 static bool StartsWithOrEndsWith(InputIterator1 First1, InputIterator1 Last1,
                                     InputIterator2 First2, InputIterator2 Last2, bool IgnoreCase)
@@ -35,7 +53,7 @@ static bool StartsWithOrEndsWith(InputIterator1 First1, InputIterator1 Last1,
     auto fnEqual = IgnoreCase ? std::function<bool(InputIterator1, InputIterator1)>(
                                     [](InputIterator1 c1, InputIterator1 c2) -> bool {
                                         return std::tolower(*c1, std::locale()) == std::tolower(*c2, std::locale()); })
-                                : std::function<bool(InputIterator1, InputIterator1)>(
+                              : std::function<bool(InputIterator1, InputIterator1)>(
                                     [](InputIterator1 c1, InputIterator1 c2) -> bool { return *c1 == *c2; });
     for (; First1 != Last1 && First2 != Last2; ++First1, ++First2)
     {
@@ -235,6 +253,85 @@ std::string TrimSuffix(const std::string& str, const std::string& strSuffix,
     std::string strTrimmed(str);
     TrimSuffixSelf(strTrimmed, strSuffix, bIgnoreCase, bRecursive);
     return strTrimmed;
+}
+
+static std::vector<std::string>
+Split(const std::string& str, const std::string& sep,
+      bool bAfter, int n, bool bIgnoreCase)
+{
+    std::vector<std::string> splitList;
+    do 
+    {
+        if (0 == n)
+            break;
+        if (sep.empty())
+        {
+            // FIXME: Here we maybe split str by its encoding(UTF-8, UTF-16, GBK or others).
+            splitList.resize(str.length());
+            std::copy(str.begin(), str.end(), splitList.begin());
+            break;
+        }
+        // We define a particular equal function for performance.
+        auto fnEqual =
+            bIgnoreCase ?
+                std::function<bool(const std::string&, size_t, const std::string&)> (
+                    [] (const std::string& str, size_t start,
+                        const std::string& sep) {
+                        for (size_t i = 0; i < sep.length(); ++start, ++i)
+                        {
+                            if (std::tolower(str[start], std::locale()) != std::tolower(sep[i], std::locale()))
+                                return false;
+                        }
+                        return true;
+                    })  : std::function<bool(const std::string&, size_t, const std::string&)>(
+                            [] (const std::string& str, size_t start,
+                                const std::string& sep) {
+                                for (size_t i = 0; i < sep.length(); ++start, ++i)
+                                {
+                                    if (str[start] != sep[i])
+                                        return false;
+                                }
+                                return true;
+                            });
+        size_t start = 0;
+        size_t maxCount = n < 0 ? SIZE_MAX : n;
+        for (size_t i = 0; i + sep.length() <= str.length() && splitList.size() < maxCount - 1;)
+        {
+            if (fnEqual(str, i, sep))
+            { 
+                splitList.push_back(str.substr(start, bAfter ? (i - start) + sep.length() : i - start));
+                i += sep.length();
+                start = i;
+                continue;
+            }
+            ++i;
+        }
+        splitList.push_back(str.substr(start, str.length() - start));
+    } while (0);
+    return splitList;
+}
+std::vector<std::string> SplitN(const std::string& str, const std::string& sep,
+                                int n, bool bIgnoreCase /*= false*/)
+{
+    return Split(str, sep, false, n, bIgnoreCase);
+}
+
+std::vector<std::string> SplitAfterN(const std::string& str, const std::string& sep,
+                                     int n, bool bIgnoreCase /*= false*/)
+{
+    return Split(str, sep, true, n, bIgnoreCase);
+}
+
+std::vector<std::string> Split(const std::string& str, const std::string& sep,
+                               bool bIgnoreCase /*= false*/)
+{
+    return Split(str, sep, false, -1, bIgnoreCase);
+}
+
+std::vector<std::string> SplitAfter(const std::string& str, const std::string& sep,
+                                    bool bIgnoreCase /*= false*/)
+{
+    return Split(str, sep, true, -1, bIgnoreCase);
 }
 
 } // !namespace strings

@@ -19,10 +19,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace base {
 namespace strings {
 
+bool Equal(const std::string& str1, const std::string& str2, bool bIgnoreCase = false);
 bool StartsWith(const std::string& strData, const std::string& strSearch, bool bIgnoreCase = false);
 bool EndsWith(const std::string& strData, const std::string& strSearch, bool bIgnoreCase = false);
 
@@ -62,6 +64,11 @@ std::string TrimPrefix(const std::string& str, const std::string& strPrefix,
                        bool bIgnoreCase = false, bool bRecursive = false);
 std::string TrimSuffix(const std::string& str, const std::string& strSuffix,
                        bool bIgnoreCase = false, bool bRecursive = false);
+
+std::vector<std::string> SplitN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
+std::vector<std::string> SplitAfterN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
+std::vector<std::string> Split(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
+std::vector<std::string> SplitAfter(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
 
 } // !namespace strings
 } // !namespace base
