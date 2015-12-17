@@ -202,5 +202,63 @@ namespace TestSuite
             str = "Hello, 世界世界";
             Assert::IsTrue("Hello, " == base::strings::TrimSuffix(str, "世界", false, true));
         }
+
+        TEST_METHOD(Test_Split_SplitAfter_SplitN_SplitAfterN)
+        {
+            std::string str = "Hello world, I am a programmer";
+            auto spList = base::strings::Split(str, " ");
+            Assert::IsTrue(spList.size() == 6);
+            Assert::IsTrue(spList[0] == "Hello" && spList[5] == "programmer");
+            spList = base::strings::SplitAfter(str, " ");
+            Assert::IsTrue(spList.size() == 6 && spList[0] == "Hello " && spList[5] == "programmer");
+
+            spList = base::strings::SplitN(str, " ", 2);
+            Assert::IsTrue(spList.size() == 2);
+            Assert::IsTrue(spList.front() == "Hello" && spList.back() == "world, I am a programmer");
+            spList = base::strings::SplitAfterN(str, " ", 3);
+            Assert::IsTrue(spList.size() == 3 && spList[0] == "Hello " && spList[2] == "I am a programmer");
+
+            str = "/user/home/";
+            spList = base::strings::Split(str, "/");
+            Assert::IsTrue(spList.size() == 4 && spList[0].empty() && spList.back().empty());
+            spList = base::strings::SplitAfter(str, "/");
+            Assert::IsTrue(spList.size() == 4 && spList[0] == "/" && spList.back().empty());
+
+            spList = base::strings::SplitN(str, "/", 0);
+            Assert::IsTrue(spList.empty());
+            spList = base::strings::SplitN(str, "/", 1);
+            Assert::IsTrue(spList.size() == 1 && spList[0] == str);
+            spList = base::strings::SplitN(str, "/", 2);
+            Assert::IsTrue(spList.size() == 2 && spList[0].empty() && spList.back() == "user/home/");
+            spList = base::strings::SplitN(str, "/", 6);
+            Assert::IsTrue(spList.size() == 4 && spList[0].empty() && spList.back().empty());
+            spList = base::strings::SplitAfterN(str, "/", 2);
+            Assert::IsTrue(spList.size() == 2 && spList[0] == "/" && spList.back() == "user/home/");
+            spList = base::strings::SplitAfterN(str, "/", 6);
+            Assert::IsTrue(spList.size() == 4 && spList[0] == "/" && spList.back().empty());
+
+            str = "A##a111A$$a世界";
+            spList = base::strings::Split(str, "A");
+            Assert::IsTrue(spList.size() == 3);
+            spList = base::strings::Split(str, "A", true);
+            Assert::IsTrue(spList.size() == 5 && spList.back() == "世界");
+
+            spList = base::strings::SplitAfter(str, "A");
+            Assert::IsTrue(spList.size() == 3);
+            spList = base::strings::SplitAfter(str, "A", true);
+            Assert::IsTrue(spList.size() == 5 && spList.front() == "A");
+
+            spList = base::strings::SplitN(str, "A", 2);
+            Assert::IsTrue(spList.size() == 2);
+            spList = base::strings::SplitN(str, "A", 3, true);
+            Assert::IsTrue(spList.size() == 3 && spList[0].empty() && spList.back() == "111A$$a世界");
+            spList = base::strings::SplitN(str, "A", 6, true);
+            Assert::IsTrue(spList.size() == 5 && spList[0].empty() && spList.back() == "世界");
+
+            spList = base::strings::SplitAfterN(str, "A", 3);
+            Assert::IsTrue(spList.size() == 3 && spList[0] == "A" && spList.back() == "$$a世界");
+            spList = base::strings::SplitAfterN(str, "A", 3, true);
+            Assert::IsTrue(spList.size() == 3 && spList[0] == "A" && spList.back() == "111A$$a世界");
+        }
     };
 }
