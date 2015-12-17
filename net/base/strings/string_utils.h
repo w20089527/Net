@@ -65,7 +65,17 @@ std::string TrimPrefix(const std::string& str, const std::string& strPrefix,
 std::string TrimSuffix(const std::string& str, const std::string& strSuffix,
                        bool bIgnoreCase = false, bool bRecursive = false);
 
+// str is the source string which will be split.
+// sep is the separator which will be used to split the str.
+// If sep is empty. we will split the str by each byte.
+// n determines how many substrings will be returned:
+//   n > 0 : at most n substrings; the last will be the unsplit remainder.
+//   n == 0: will return an empty list.
+//   n < 0 : equal to Split which will return all substrings.
+// bIgnoreCase means whether we should ignore sep case.
 std::vector<std::string> SplitN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
+
+// After means we will split the str after sep, and sep will be put into substrings.
 std::vector<std::string> SplitAfterN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
 std::vector<std::string> Split(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
 std::vector<std::string> SplitAfter(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
