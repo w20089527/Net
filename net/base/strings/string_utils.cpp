@@ -346,6 +346,8 @@ std::vector<std::string> SplitAfter(const std::string& str, const std::string& s
 
 bool IsDigit(const std::string& str, bool bHex /*= false*/)
 {
+    if (str.empty())
+        return false;
     for (auto v : str)
     {
         if (bHex)
