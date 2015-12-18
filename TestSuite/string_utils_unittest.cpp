@@ -268,5 +268,24 @@ namespace TestSuite
             spList = base::strings::SplitAfterN(str, "A", 3, true);
             Assert::IsTrue(spList.size() == 3 && spList[0] == "A" && spList.back() == "111A$$a ¿ΩÁ");
         }
+
+        TEST_METHOD(Test_IsDigit)
+        {
+            std::string str = "123";
+            Assert::IsTrue(base::strings::IsDigit(str) == true);
+            Assert::IsTrue(base::strings::IsDigit(str, true) == true);
+
+            str = "abc123";
+            Assert::IsTrue(base::strings::IsDigit(str) == false);
+            Assert::IsTrue(base::strings::IsDigit(str, true) == true);
+
+            str = "klo12";
+            Assert::IsTrue(base::strings::IsDigit(str) == false);
+            Assert::IsTrue(base::strings::IsDigit(str, true) == false);
+
+            str = "";
+            Assert::IsTrue(base::strings::IsDigit(str) == false);
+            Assert::IsTrue(base::strings::IsDigit(str, true) == false);
+        }
     };
 }
