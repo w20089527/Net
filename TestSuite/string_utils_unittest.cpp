@@ -227,7 +227,11 @@ namespace TestSuite
             Assert::IsTrue(spList.size() == 4 && spList[0].empty() && spList.back().empty());
             spList = base::strings::SplitAfter(str, "/");
             Assert::IsTrue(spList.size() == 4 && spList[0] == "/" && spList.back().empty());
+            spList = base::strings::Split(str, "");
+            Assert::IsTrue(spList.size() == str.length() && spList.front() == "/");
 
+            spList = base::strings::SplitN(str, "", 2);
+            Assert::IsTrue(spList.size() == 2 && spList.back() == "user/home/");
             spList = base::strings::SplitN(str, "/", 0);
             Assert::IsTrue(spList.empty());
             spList = base::strings::SplitN(str, "/", 1);
