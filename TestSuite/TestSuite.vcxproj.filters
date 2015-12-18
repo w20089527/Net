@@ -22,6 +22,9 @@
     <Filter Include="base\strings">
       <UniqueIdentifier>{29b5eaa2-812a-401d-a979-07f9ee7bb488}</UniqueIdentifier>
     </Filter>
+    <Filter Include="http">
+      <UniqueIdentifier>{231d362f-fee0-41c6-b115-0c09c6ed6d2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -47,17 +50,20 @@
     <ClCompile Include="UDPEchoServer.cpp">
       <Filter>socket</Filter>
     </ClCompile>
-    <ClCompile Include="string_utils_Test.cpp">
-      <Filter>base\strings</Filter>
-    </ClCompile>
     <ClCompile Include="zip_Test.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="DatagramSocket_Test.cpp">
+    <ClCompile Include="string_utils_unittest.cpp">
+      <Filter>base\strings</Filter>
+    </ClCompile>
+    <ClCompile Include="DatagramSocket_unittest.cpp">
       <Filter>socket</Filter>
     </ClCompile>
-    <ClCompile Include="Socket_Test.cpp">
+    <ClCompile Include="Socket_unittest.cpp">
       <Filter>socket</Filter>
+    </ClCompile>
+    <ClCompile Include="url_unittest.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

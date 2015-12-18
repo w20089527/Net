@@ -162,9 +162,9 @@
     <ClInclude Include="UDPEchoServer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DatagramSocket_Test.cpp" />
+    <ClCompile Include="DatagramSocket_unittest.cpp" />
     <ClCompile Include="EchoServer.cpp" />
-    <ClCompile Include="Socket_Test.cpp" />
+    <ClCompile Include="Socket_unittest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -172,7 +172,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UDPEchoServer.cpp" />
-    <ClCompile Include="string_utils_Test.cpp" />
+    <ClCompile Include="string_utils_unittest.cpp" />
+    <ClCompile Include="url_unittest.cpp" />
     <ClCompile Include="zip_Test.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -147,8 +147,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base\strings\string_utils.cpp" />
+    <ClCompile Include="base\url.cpp" />
     <ClCompile Include="base\zip.cpp" />
-    <ClCompile Include="http\url.cpp" />
     <ClCompile Include="socket\DatagramSocket.cpp" />
     <ClCompile Include="socket\DatagramSocketImpl.cpp" />
     <ClCompile Include="socket\ServerSocket.cpp" />
@@ -161,9 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base\strings\string_utils.h" />
+    <ClInclude Include="base\url.h" />
     <ClInclude Include="base\zip.h" />
     <ClInclude Include="http\httpdefs.h" />
-    <ClInclude Include="http\url.h" />
     <ClInclude Include="socket\DatagramSocket.h" />
     <ClInclude Include="socket\DatagramSocketImpl.h" />
     <ClInclude Include="socket\ServerSocket.h" />

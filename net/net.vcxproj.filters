@@ -52,11 +52,11 @@
     <ClCompile Include="socket\DatagramSocket.cpp">
       <Filter>socket</Filter>
     </ClCompile>
-    <ClCompile Include="http\url.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
     <ClCompile Include="base\strings\string_utils.cpp">
       <Filter>base\strings</Filter>
+    </ClCompile>
+    <ClCompile Include="base\url.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,9 +84,6 @@
     <ClInclude Include="http\httpdefs.h">
       <Filter>http</Filter>
     </ClInclude>
-    <ClInclude Include="http\url.h">
-      <Filter>http</Filter>
-    </ClInclude>
     <ClInclude Include="socket\ServerSocketImpl.h">
       <Filter>socket</Filter>
     </ClInclude>
@@ -101,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="base\strings\string_utils.h">
       <Filter>base\strings</Filter>
+    </ClInclude>
+    <ClInclude Include="base\url.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
