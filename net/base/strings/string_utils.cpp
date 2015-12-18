@@ -266,9 +266,19 @@ Split(const std::string& str, const std::string& sep,
             break;
         if (sep.empty())
         {
-            // FIXME: Here we maybe split str by its encoding(UTF-8, UTF-16, GBK or others).
-            splitList.resize(str.length());
-            std::copy(str.begin(), str.end(), splitList.begin());
+            // FIXME: Here we maybe split |str| by its encoding(UTF-8, UTF-16, GBK or others).
+            splitList.resize((n < 0 || n > (int)str.length()) ? str.length() : n);
+            if (n < 0)
+                std::copy(str.begin(), str.end(), splitList.begin());
+            else
+            {
+                int i = 0;
+                for (; i < n - 1; ++i)
+                {
+                    splitList[i] = str.substr(i, 1);
+                }
+                splitList[i] = str.substr(i);
+            }
             break;
         }
         // We define a particular equal function for performance.
@@ -332,6 +342,21 @@ std::vector<std::string> SplitAfter(const std::string& str, const std::string& s
                                     bool bIgnoreCase /*= false*/)
 {
     return Split(str, sep, true, -1, bIgnoreCase);
+}
+
+bool IsDigit(const std::string& str, bool bHex /*= false*/)
+{
+    for (auto v : str)
+    {
+        if (bHex)
+        {
+            if (!std::isxdigit(v, std::locale()))
+                return false;
+        }
+        else if (!std::isdigit(v, std::locale()))
+            return false;
+    }
+    return true;
 }
 
 } // !namespace strings

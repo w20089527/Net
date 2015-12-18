@@ -34,7 +34,7 @@ void ToLowerSelf(std::string& str);
 void ToUpperSelf(std::string& str);
 
 // The method with Self suffix will make changes on the source string.
-// strTrimChars is a set of chars that will be trimmed.
+// |strTrimChars| is a set of chars that will be trimmed.
 void TrimLeftSelf(std::string& str, const std::string& strTrimChars);
 void TrimRightSelf(std::string& str, const std::string& strTrimChars);
 void TrimSelf(std::string& str, const std::string& strTrimChars);
@@ -53,8 +53,8 @@ std::string TrimLeftSpace(const std::string& str);
 std::string TrimRightSpace(const std::string& str);
 std::string TrimSpace(const std::string& str);
 
-// bRecursive means whether we should trim a particular prefix or suffix recursively.
-// For example, "hellohello world", we trim the "hello" prefix and if bRecursive is true,
+// |bRecursive| means whether we should trim a particular prefix or suffix recursively.
+// For example, "hellohello world", we trim the "hello" prefix and if |bRecursive| is true,
 // the result is " world". Otherwise it will be "hello world".
 void TrimPrefixSelf(std::string& str, const std::string& strPrefix,
                     bool bIgnoreCase = false, bool bRecursive = false);
@@ -65,20 +65,24 @@ std::string TrimPrefix(const std::string& str, const std::string& strPrefix,
 std::string TrimSuffix(const std::string& str, const std::string& strSuffix,
                        bool bIgnoreCase = false, bool bRecursive = false);
 
-// str is the source string which will be split.
-// sep is the separator which will be used to split the str.
-// If sep is empty. we will split the str by each byte.
-// n determines how many substrings will be returned:
+// |str| is the source string which will be split.
+// |sep| is the separator which will be used to split the str.
+// If |sep| is empty. we will split the |str| by each byte.
+// |n| determines how many substrings will be returned:
 //   n > 0 : at most n substrings; the last will be the unsplit remainder.
 //   n == 0: will return an empty list.
 //   n < 0 : equal to Split which will return all substrings.
-// bIgnoreCase means whether we should ignore sep case.
+// |bIgnoreCase| means whether we should ignore sep case.
 std::vector<std::string> SplitN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
 
-// After means we will split the str after sep, and sep will be put into substrings.
+// After means we will split the |str| after |sep|, and |sep| will be put into substrings.
 std::vector<std::string> SplitAfterN(const std::string& str, const std::string& sep, int n, bool bIgnoreCase = false);
 std::vector<std::string> Split(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
 std::vector<std::string> SplitAfter(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
+
+// Determines whether the |str| consists of digits.
+// |bHex| determines whether the |str| is hexadecimal.
+bool IsDigit(const std::string& str, bool bHex = false);
 
 } // !namespace strings
 } // !namespace base
