@@ -16,13 +16,16 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // 
 
+#include "net/base/escape.h"
 #include "net/base/strings/string_utils.h"
 #include "net/base/url.h"
 
 namespace net {
 namespace http {
 
-static bool IsValidScheme(const std::string& strScheme)
+namespace {
+
+bool IsValidScheme(const std::string& strScheme)
 {
     if (strScheme.empty())
         return false;
@@ -44,8 +47,8 @@ static bool IsValidScheme(const std::string& strScheme)
     }
     return true;
 }
-static bool ParseScheme(const std::string& strRawUrl,
-                        std::string& strScheme, std::string& strRest)
+bool ParseScheme(const std::string& strRawUrl,
+                 std::string& strScheme, std::string& strRest)
 {
     // Extract scheme.
     auto pos = strRawUrl.find(':');
@@ -66,9 +69,9 @@ static bool ParseScheme(const std::string& strRawUrl,
     strRest = strRawUrl;
     return true;
 }
-static bool ParseAuthority(const std::string& strAuthority,
-                           std::string& strUserName, std::string& strPassword,
-                           std::string& strHost, std::uint16_t& uPort)
+bool ParseAuthority(const std::string& strAuthority,
+                    std::string& strUserName, std::string& strPassword,
+                    std::string& strHost, std::uint16_t& uPort)
 {
     if (strAuthority.empty())
         return false;
@@ -76,7 +79,7 @@ static bool ParseAuthority(const std::string& strAuthority,
     if (spList.size() > 2
         || (spList.size() == 2 && spList[1].empty()))
         return false;
-    
+
     std::string strHostPort;
     if (spList.size() == 2)
     {
@@ -103,9 +106,12 @@ static bool ParseAuthority(const std::string& strAuthority,
         else
             return false;
     }
-    
+
     return true;
 }
+
+} // !namespace
+
 Url Url::Parse(const std::string& strRawUrl)
 {
     // <scheme>://<user>:<password>@<host>:<port>/<path>?<query>#<frag>
@@ -153,8 +159,7 @@ Url Url::Parse(const std::string& strRawUrl)
         if (url.m_strScheme.empty()
             && !base::strings::StartsWith(strRest, "//"))
         {
-            // TODO: Need to unescape |strRest|
-            url.m_strPath = strRest;
+            url.m_strPath = base::Unescape(strRest);
             break;
         }
 
