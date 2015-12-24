@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="DatagramSocket_unittest.cpp" />
     <ClCompile Include="EchoServer.cpp" />
+    <ClCompile Include="escape_unittest.cpp" />
     <ClCompile Include="Socket_unittest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

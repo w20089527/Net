@@ -58,6 +58,9 @@
     <ClCompile Include="base\url.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="base\escape.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\Socket.h">
@@ -100,6 +103,9 @@
       <Filter>base\strings</Filter>
     </ClInclude>
     <ClInclude Include="base\url.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\escape.h">
       <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>

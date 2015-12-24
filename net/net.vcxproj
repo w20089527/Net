@@ -146,6 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="base\escape.cpp" />
     <ClCompile Include="base\strings\string_utils.cpp" />
     <ClCompile Include="base\url.cpp" />
     <ClCompile Include="base\zip.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="socket\StreamSocketImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="base\escape.h" />
     <ClInclude Include="base\strings\string_utils.h" />
     <ClInclude Include="base\url.h" />
     <ClInclude Include="base\zip.h" />
