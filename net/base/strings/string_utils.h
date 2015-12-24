@@ -80,9 +80,15 @@ std::vector<std::string> SplitAfterN(const std::string& str, const std::string& 
 std::vector<std::string> Split(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
 std::vector<std::string> SplitAfter(const std::string& str, const std::string& sep, bool bIgnoreCase = false);
 
+// Determines whether |c| is a decimal or hexadecimal based on |bHex|.
+bool IsDigit(int c, bool bHex = false);
+
 // Determines whether the |str| consists of digits.
 // |bHex| determines whether the |str| is hexadecimal.
 bool IsDigit(const std::string& str, bool bHex = false);
+
+// Convert a hexadecimal to an integer.
+char HexDigitToInt(char c);
 
 } // !namespace strings
 } // !namespace base

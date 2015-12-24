@@ -16,6 +16,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // 
 
+#include <cassert>
 #include <functional>
 #include <locale>
 
@@ -344,21 +345,33 @@ std::vector<std::string> SplitAfter(const std::string& str, const std::string& s
     return Split(str, sep, true, -1, bIgnoreCase);
 }
 
+bool IsDigit(int c, bool bHex /*= false*/)
+{
+    return bHex ? std::isxdigit(c, std::locale()) : std::isdigit(c, std::locale());
+}
+
 bool IsDigit(const std::string& str, bool bHex /*= false*/)
 {
     if (str.empty())
         return false;
     for (auto v : str)
     {
-        if (bHex)
-        {
-            if (!std::isxdigit(v, std::locale()))
-                return false;
-        }
-        else if (!std::isdigit(v, std::locale()))
+        if (!IsDigit(v, bHex))
             return false;
     }
     return true;
+}
+
+char HexDigitToInt(char c)
+{
+    assert(IsDigit(c, true));
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    else if ('A' <= c && c <= 'Z')
+        return c - 'A' + 10;
+    else if ('a' <= c && c <= 'z')
+        return c - 'a' + 10;
+    return 0;
 }
 
 } // !namespace strings
