@@ -354,9 +354,13 @@ bool IsDigit(const std::string& str, bool bHex /*= false*/)
 {
     if (str.empty())
         return false;
-    for (auto v : str)
+    if (!bHex && str.length() == 1 && '-' == str[0])
+        return false;
+    for (size_t i = 0; i < str.length(); ++i)
     {
-        if (!IsDigit(v, bHex))
+        if (!bHex && 0 == i && '-' == str[i])
+            continue;
+        if (!IsDigit(str[i], bHex))
             return false;
     }
     return true;

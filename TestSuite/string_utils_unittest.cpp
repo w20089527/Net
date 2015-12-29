@@ -286,6 +286,10 @@ namespace TestSuite
             str = "";
             Assert::IsTrue(base::strings::IsDigit(str) == false);
             Assert::IsTrue(base::strings::IsDigit(str, true) == false);
+
+            str = "-12";
+            Assert::IsTrue(base::strings::IsDigit(str) == true);
+            Assert::IsTrue(base::strings::IsDigit(str, true) == false);
         }
     };
 }
