@@ -16,6 +16,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // 
 
+#include <stack>
+
 #include "net/base/escape.h"
 #include "net/base/strings/string_utils.h"
 #include "net/base/url.h"
@@ -71,7 +73,7 @@ bool ParseScheme(const std::string& strRawUrl,
 }
 bool ParseAuthority(const std::string& strAuthority,
                     std::string& strUserName, std::string& strPassword,
-                    std::string& strHost, std::uint16_t& uPort)
+                    std::string& strHost, int& iPort)
 {
     if (strAuthority.empty())
         return false;
@@ -87,9 +89,9 @@ bool ParseAuthority(const std::string& strAuthority,
         auto spList1 = base::strings::Split(spList[0], ":");
         if (spList1.size() > 2)
             return false;
-        strUserName = spList1[0];
+        strUserName = base::Unescape(spList1[0]);
         if (spList1.size() == 2)
-            strPassword = spList1[1];
+            strPassword = base::Unescape(spList1[1]);
         strHostPort = spList[1];
     }
     else
@@ -98,11 +100,11 @@ bool ParseAuthority(const std::string& strAuthority,
     auto spList1 = base::strings::Split(strHostPort, ":");
     if (spList1.size() > 2)
         return false;
-    strHost = spList1[0];
+    strHost = base::Unescape(spList1[0]);
     if (spList1.size() == 2)
     {
         if (base::strings::IsDigit(spList1[1]))
-            uPort = (std::uint16_t)std::stoi(spList1[1]);
+            iPort = std::stoi(spList1[1]);
         else
             return false;
     }
@@ -128,7 +130,7 @@ Url Url::Parse(const std::string& strRawUrl)
             break;
         strPrefix = spList[0];
         if (spList.size() == 2)
-            url.m_strFragment = spList[1];
+            url.m_strFragment = base::Unescape(spList[1]);
         spList = base::strings::Split(strPrefix, "?");
         if (spList.size() > 2)
             break;
@@ -170,7 +172,7 @@ Url Url::Parse(const std::string& strRawUrl)
             auto pos1 = strRest.find_first_not_of('/');
             if (std::string::npos == pos1)
                 break;
-            url.m_strPath = strRest.substr(pos1 - 1);
+            url.m_strPath = base::Unescape(strRest.substr(pos1 - 1));
             break;
         } // !if <scheme>:///<path>
 
@@ -185,12 +187,12 @@ Url Url::Parse(const std::string& strRawUrl)
         else
             strAuthority = strRest.substr(pos1, pos2 - pos1);
         if (!ParseAuthority(strAuthority, url.m_strUserName, url.m_strPassword,
-                            url.m_strHost, url.m_uPort))
+                            url.m_strHost, url.m_iPort))
         {
             url.m_strUserName = "";
             url.m_strPassword = "";
             url.m_strHost = "";
-            url.m_uPort = 0;
+            url.m_iPort = 0;
             break;
         }
         if (pos2 == std::string::npos)
@@ -198,11 +200,112 @@ Url Url::Parse(const std::string& strRawUrl)
             url.m_strPath = "/";
             break;
         }
-        url.m_strPath = strRest.substr(pos2);
+        url.m_strPath = base::Unescape(strRest.substr(pos2));
         
     } while (0);
     
     return url;
+}
+
+std::string Url::EscapedPath() const
+{
+    return base::EscapeUrl(m_strPath);
+}
+
+Url Url::ResolveReference(const Url& ref) const
+{
+    if (ref.IsAbsolute())
+        return ref;
+
+    Url url;
+    url.SetScheme(m_strScheme);
+    url.SetUserName(m_strUserName);
+    url.SetPassword(m_strPassword);
+    url.SetHost(m_strHost);
+    url.SetPort(m_iPort);
+    url.SetRawQuery(ref.GetRawQuery());
+    url.SetFragment(ref.GetFragment());
+
+    auto pathDirList = base::strings::Split(m_strPath, "/");
+    auto relDirList = base::strings::Split(ref.GetPath(), "/");
+    std::stack<std::string> pathDirStack;
+    for (auto v : pathDirList)
+    {
+        if (v.empty())
+            continue;
+        pathDirStack.push(v);
+    }
+    for (auto v : relDirList)
+    {
+        if (v.empty() || "." == v)
+            continue;
+
+        if (".." == v)
+        {
+            if (!pathDirStack.empty())
+                pathDirStack.pop();
+        }
+        else
+            pathDirStack.push(v);
+    }
+    if (pathDirStack.empty())
+        url.SetPath("/");
+    else
+    {
+        std::string strPath;
+        while (!pathDirStack.empty())
+        {
+            strPath = pathDirStack.top() + "/" + strPath;
+            pathDirStack.pop();
+        }
+        url.SetPath("/" + strPath);
+    }
+    return url;
+}
+
+Url Url::ResolveReference(const std::string& strRawUrl) const
+{
+    return ResolveReference(Parse(strRawUrl));
+}
+
+std::string Url::ToString() const
+{
+    std::string strUrl;
+    std::string strTail;
+
+    if (!m_strRawQuery.empty())
+        strTail = "?" + m_strRawQuery;
+    if (!m_strFragment.empty())
+        strTail += "#" + base::EscapeUrlComponent(m_strFragment);
+
+    if (!m_strScheme.empty())
+        strUrl = m_strScheme + ":";
+
+    // scheme:opaque?query#fragment
+    if (!m_strOpaque.empty())
+        return strUrl + m_strOpaque + strTail;
+
+    // <scheme>://<user>:<password>@<host>:<port>/<path>?<query>#<frag>
+    if (!strUrl.empty())
+        strUrl += "//";
+    if (!m_strUserName.empty())
+    {
+        strUrl += base::EscapeUrlComponent(m_strUserName);
+        if (!m_strPassword.empty())
+            strUrl += ":" + base::EscapeUrlComponent(m_strPassword);
+        if (!m_strHost.empty())
+            strUrl += "@";
+    }
+    if (!m_strHost.empty())
+    {
+        strUrl += base::EscapeUrlComponent(m_strHost);
+        if (m_iPort >= 0)
+            strUrl += ":" + std::to_string(m_iPort);
+    }
+    if (strUrl.empty() && m_strPath.empty())
+        return "";
+    strUrl += m_strPath.empty() ? "/" : EscapedPath();
+    return strUrl + strTail;
 }
 
 } // !namespace http

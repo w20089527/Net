@@ -45,8 +45,8 @@ public:
     void SetPassword(const std::string& strPassword) { m_strPassword = strPassword; }
     std::string GetHost() const { return m_strHost; }
     void SetHost(const std::string& strHost) { m_strHost = strHost; }
-    std::uint16_t GetPort() const { return m_uPort; }
-    void SetPort(std::uint16_t uPort) { m_uPort = uPort; }
+    int GetPort() const { return m_iPort; }
+    void SetPort(int iPort) { m_iPort = iPort; }
     std::string GetPath() const { return m_strPath; }
     void SetPath(const std::string& strPath) { m_strPath = strPath; }
 
@@ -68,6 +68,11 @@ public:
     // If |ref| is relative, we will make a new URI based on the absolute base URI.
     Url ResolveReference(const Url& ref) const;
 
+    // The |strRawUrl| can be absolute or relative.
+    // Inside we will call Parse method and
+    // pass the returned URL as |ref| into ResolveReference(const Url& ref).
+    Url ResolveReference(const std::string& strRawUrl) const;
+
     // Here we may return one of two kind URIs.
     // If opaque is not empty, the return form is:
     // "scheme:opaque?query#fragment"
@@ -82,7 +87,7 @@ private:
     std::string m_strUserName;
     std::string m_strPassword;
     std::string m_strHost;
-    std::uint16_t m_uPort = 0;
+    int         m_iPort = -1;
     std::string m_strPath;
     std::string m_strRawQuery;
     std::string m_strFragment;

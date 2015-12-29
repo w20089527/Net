@@ -87,5 +87,14 @@ namespace TestSuite
             Assert::IsTrue(url.GetPath().empty());
             Assert::IsTrue(url.GetOpaque() == "hello@gmail.com");
         }
+
+        TEST_METHOD(Test_ResolveReference_ToString)
+        {
+            Url baseUrl = Url::Parse("http://www.google.com/search?q=q");
+            auto resolveUrl = baseUrl.ResolveReference("../../../hello?q=b#f");
+            Assert::IsTrue(resolveUrl.ToString() == "http://www.google.com/hello/?q=b#f");
+
+            Assert::IsTrue(Url::Parse("mailto:abc@gmail.com").ToString() == "mailto:abc@gmail.com");
+        }
     };
 }
