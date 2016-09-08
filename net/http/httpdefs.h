@@ -20,9 +20,18 @@
 
 #include <unordered_map>
 
+#include "net/base/strings/string_utils.h"
+
 namespace net {
 namespace http {
-    typedef std::unordered_multimap<std::string, std::string> Header;
+    struct KeyEqualCaseInsensitive
+    {
+        bool operator() (const std::string& lhs, const std::string& rhs) const
+        {
+            return base::strings::Equal(lhs, rhs, true);
+        }
+    };
+    typedef std::unordered_multimap<std::string, std::string, std::hash<std::string>, KeyEqualCaseInsensitive> Header;
     typedef std::unordered_multimap<std::string, std::string> Values;
 } // !namespace http
 } // !namespace net
