@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright(c) 2015 huan.wang
+// Copyright(c) 2015-2016 huan.wang
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files(the "Software"),
@@ -205,6 +205,20 @@ Url Url::Parse(const std::string& strRawUrl)
     } while (0);
     
     return url;
+}
+
+std::string Url::HostPort() const
+{
+    std::string hostPort;
+    if (m_strHost.length() > 0)
+    {
+        hostPort = m_strHost;
+    }
+    if (m_iPort >= 0)
+    {
+        hostPort += ":" + std::to_string(m_iPort);
+    }
+    return hostPort;
 }
 
 std::string Url::EscapedPath() const

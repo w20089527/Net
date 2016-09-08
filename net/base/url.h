@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright(c) 2015 huan.wang
+// Copyright(c) 2015-2016 huan.wang
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files(the "Software"),
@@ -49,6 +49,9 @@ public:
     void SetPort(int iPort) { m_iPort = iPort; }
     std::string GetPath() const { return m_strPath; }
     void SetPath(const std::string& strPath) { m_strPath = strPath; }
+
+    // HostPort returns the form of 'host:port'.
+    std::string HostPort() const;
 
     // RawQuery is encoded query values, without '?'
     // For example, http://www.abc.com?a=1&b=2, the 'a=1&b=2' is raw query.
