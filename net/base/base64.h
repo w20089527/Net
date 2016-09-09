@@ -23,9 +23,11 @@
 
 namespace base {
 namespace base64 {
-    std::string Encode(const std::string& str);
-    std::string Encode(const unsigned char* str, size_t len);
-    std::string Decode(const std::string& str);
-    std::string Decode(const unsigned char* str, size_t len);
+
+std::string Encode(const std::string& str);
+std::string Encode(const unsigned char* str, size_t len);
+std::string Decode(const std::string& str);
+std::string Decode(const unsigned char* str, size_t len);
+
 } // !namespace base64
 } // !namespace base
