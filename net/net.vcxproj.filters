@@ -61,6 +61,12 @@
     <ClCompile Include="base\escape.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="http\request.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="base\base64.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\Socket.h">
@@ -106,6 +112,15 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="base\escape.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="http\request.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\cookie.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="base\base64.h">
       <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>

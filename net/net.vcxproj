@@ -146,10 +146,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="base\base64.cpp" />
     <ClCompile Include="base\escape.cpp" />
     <ClCompile Include="base\strings\string_utils.cpp" />
     <ClCompile Include="base\url.cpp" />
     <ClCompile Include="base\zip.cpp" />
+    <ClCompile Include="http\request.cpp" />
     <ClCompile Include="socket\DatagramSocket.cpp" />
     <ClCompile Include="socket\DatagramSocketImpl.cpp" />
     <ClCompile Include="socket\ServerSocket.cpp" />
@@ -161,11 +163,14 @@
     <ClCompile Include="socket\StreamSocketImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="base\base64.h" />
     <ClInclude Include="base\escape.h" />
     <ClInclude Include="base\strings\string_utils.h" />
     <ClInclude Include="base\url.h" />
     <ClInclude Include="base\zip.h" />
+    <ClInclude Include="http\cookie.h" />
     <ClInclude Include="http\httpdefs.h" />
+    <ClInclude Include="http\request.h" />
     <ClInclude Include="socket\DatagramSocket.h" />
     <ClInclude Include="socket\DatagramSocketImpl.h" />
     <ClInclude Include="socket\ServerSocket.h" />
