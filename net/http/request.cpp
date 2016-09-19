@@ -101,8 +101,7 @@ void ParseQuery(const std::string& rawQuery, Values& form)
 
 std::shared_ptr<Request> Request::NewRequest(
     const std::string & method,
-    const std::string & url,
-    const std::string & body)
+    const std::string & url)
 {
     std::string validMethod(method);
     if (base::strings::TrimSpace(validMethod).empty())
@@ -122,65 +121,8 @@ std::shared_ptr<Request> Request::NewRequest(
     request->SetMethod(validMethod);
     request->SetProto(1, 1);
     request->SetUrl(u);
-    request->SetBody(body);
     request->SetHost(u.HostPort());
     return request;
-}
-
-std::shared_ptr<Request> Request::ReadRequest(const std::string& buffer)
-{
-    // TODO: we need to parse the request from |buffer|.
-    std::shared_ptr<Request> request(new Request());
-    return request;
-}
-
-std::string Request::GetHeader(const std::string & key) const
-{
-    auto v = m_header.find(key);
-    if (v == m_header.end())
-    {
-        return "";
-    }
-    return v->second;
-}
-
-std::vector<std::string> Request::GetHeaders(const std::string & key) const
-{
-    std::vector<std::string> valueList;
-    auto vlist = m_header.equal_range(key);
-    for (auto iter = vlist.first; iter != vlist.second; ++iter)
-    {
-        valueList.push_back(iter->second);
-    }
-    return valueList;
-}
-
-Header Request::GetHeaders() const
-{
-    return m_header;
-}
-
-void Request::SetHeader(const Header & header)
-{
-    m_header = header;
-}
-
-void Request::SetHeader(const std::string & key, const std::string & value)
-{
-    auto validKey = base::strings::TrimSpace(key);
-    if (validKey.empty())
-    {
-        return;
-    }
-    auto v = m_header.find(validKey);
-    if (v != m_header.end())
-    {
-        v->second = value;
-    }
-    else
-    {
-        m_header.emplace(validKey, value);
-    }
 }
 
 std::string Request::GetMethod() const
@@ -201,42 +143,6 @@ const Url & Request::GetUrl()
 void Request::SetUrl(const Url & url)
 {
     m_url = url;
-}
-
-std::string Request::GetProto() const
-{
-    return "HTTP/" + std::to_string(m_protoMajor) + "." + std::to_string(m_protoMinor);
-}
-
-void Request::SetProto(int protoMajor, int protoMinor)
-{
-    m_protoMajor = protoMajor;
-    m_protoMinor = protoMinor;
-}
-
-std::string Request::GetBody() const
-{
-    return m_body;
-}
-
-void Request::SetBody(const std::string & body)
-{
-    m_body = body;
-}
-
-size_t Request::GetContentLength() const
-{
-    return m_body.length();
-}
-
-bool Request::GetClose() const
-{
-    return m_close;
-}
-
-void Request::SetClose(bool close)
-{
-    m_close = close;
 }
 
 std::string Request::GetHost() const
@@ -316,39 +222,20 @@ std::tuple<std::string, std::string, bool> Request::BasicAuth() const
     return{ "", "", false };
 }
 
-void Request::ParseForm()
-{
-    ParseQuery(m_url.GetRawQuery(), m_form);
-
-    if ("POST" != m_method
-        && "PUT" != m_method
-        && "PATCH" != m_method)
-    {
-        return;
-    }
-    auto contentType = base::strings::TrimSpace(GetHeader("Content-Type"));
-    if (contentType.empty())
-        return;
-    auto type = base::strings::SplitN(contentType, ";", 2)[0];
-    type = base::strings::ToLower(type);
-    if ("application/x-www-form-urlencoded" == type)
-    {
-        ParseQuery(m_body, m_postForm);
-    }
-    else if ("multipart/form-data" == type)
-    {
-        ParseMultipartForm();
-    }
-}
-
-void Request::ParseMultipartForm()
-{
-}
-
 void Request::SetBasicAuth(const std::string & username, const std::string & password)
 {
     auto value = base::base64::Encode(username + ":" + password);
     SetHeader("Authorization", "Basic " + value);
+}
+
+void Request::SetForm(const Values & form)
+{
+    m_form = form;
+}
+
+void Request::SetPostForm(const Values & form)
+{
+    m_postForm = form;
 }
 
 std::string Request::FormValue(const std::string & key) const

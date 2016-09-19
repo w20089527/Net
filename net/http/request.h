@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "net/base/url.h"
+#include "net/http/common.h"
 #include "net/http/cookie.h"
 #include "net/http/httpdefs.h"
 
@@ -30,39 +31,19 @@ namespace net {
 namespace http {
 
 class Request
+    : public CommonRequestResponse
 {
 public:
-    ~Request()
-    {
-    }
+    ~Request() {}
 
     // NewRequest creates a request based on a method, URL and optional body.
-    static std::shared_ptr<Request> NewRequest(const std::string& method, const std::string& url, const std::string& body = "");
-
-    // ReadRequest creates a request from an incoming request.
-    static std::shared_ptr<Request> ReadRequest(const std::string& buffer);
-
-    std::string GetHeader(const std::string& key) const;
-    std::vector<std::string> GetHeaders(const std::string& key) const;
-    Header GetHeaders() const;
-    void SetHeader(const Header& header);
-    void SetHeader(const std::string& key, const std::string& value);
+    static std::shared_ptr<Request> NewRequest(const std::string& method, const std::string& url);
 
     std::string GetMethod() const;
     void SetMethod(const std::string& method);
 
     const Url& GetUrl();
     void SetUrl(const Url& url);
-
-    std::string GetProto() const;
-    void SetProto(int protoMajor, int protoMinor);
-
-    std::string GetBody() const;
-    void SetBody(const std::string& body);
-    size_t GetContentLength() const;
-
-    bool GetClose() const;
-    void SetClose(bool close);
 
     std::string GetHost() const;
     void SetHost(const std::string& host);
@@ -85,17 +66,15 @@ public:
     // The tuple<2>: whether present and valid
     std::tuple<std::string, std::string, bool> BasicAuth() const;
 
-    // ParseForm parses the raw query as form values.
-    // For POST or PUT requests, it will parse the request body as a form.
-    // And it may call ParseMultipartForm depending on the request Content-Type.
-    void ParseForm();
-
-    // ParseMultipartForm parses a request body as multipart/form-data.
-    void ParseMultipartForm();
-
     // SetBasicAuth sets the request's Authorization header to user HTTP Basic Authorization
     // with the provided username and password.
     void SetBasicAuth(const std::string& username, const std::string& password);
+
+    // SetForm keeps the query string parameters.
+    void SetForm(const Values& form);
+
+    // SetPostForm keeps the the named component of POST or PUT request body.
+    void SetPostForm(const Values& form);
 
     // FormValue returns the first value from the named component of the query.
     // POST and PUT body parameters take precedence over URL query string values.
@@ -114,18 +93,11 @@ public:
     std::string UserAgent() const;
 
 private:
-    Request()
-    {
-    }
+    Request() {}
 
 private:
-    Header m_header;
     std::string m_method;
     Url m_url;
-    int m_protoMajor;
-    int m_protoMinor;
-    std::string m_body;
-    bool m_close;
     std::string m_host;
     Values m_form;
     Values m_postForm;
