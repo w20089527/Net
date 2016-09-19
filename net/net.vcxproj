@@ -151,7 +151,10 @@
     <ClCompile Include="base\strings\string_utils.cpp" />
     <ClCompile Include="base\url.cpp" />
     <ClCompile Include="base\zip.cpp" />
+    <ClCompile Include="http\common.cpp" />
+    <ClCompile Include="http\context.cpp" />
     <ClCompile Include="http\request.cpp" />
+    <ClCompile Include="http\response.cpp" />
     <ClCompile Include="socket\DatagramSocket.cpp" />
     <ClCompile Include="socket\DatagramSocketImpl.cpp" />
     <ClCompile Include="socket\ServerSocket.cpp" />
@@ -168,9 +171,12 @@
     <ClInclude Include="base\strings\string_utils.h" />
     <ClInclude Include="base\url.h" />
     <ClInclude Include="base\zip.h" />
+    <ClInclude Include="http\common.h" />
+    <ClInclude Include="http\context.h" />
     <ClInclude Include="http\cookie.h" />
     <ClInclude Include="http\httpdefs.h" />
     <ClInclude Include="http\request.h" />
+    <ClInclude Include="http\response.h" />
     <ClInclude Include="socket\DatagramSocket.h" />
     <ClInclude Include="socket\DatagramSocketImpl.h" />
     <ClInclude Include="socket\ServerSocket.h" />

@@ -67,6 +67,15 @@
     <ClCompile Include="base\base64.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="http\common.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="http\response.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="http\context.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\Socket.h">
@@ -122,6 +131,15 @@
     </ClInclude>
     <ClInclude Include="base\base64.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="http\response.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\common.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\context.h">
+      <Filter>http</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
