@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base64_unittest.cpp" />
+    <ClCompile Include="client_unittest.cpp" />
     <ClCompile Include="DatagramSocket_unittest.cpp" />
     <ClCompile Include="EchoServer.cpp" />
     <ClCompile Include="escape_unittest.cpp" />

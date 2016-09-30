@@ -71,5 +71,8 @@
     <ClCompile Include="base64_unittest.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="client_unittest.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
