@@ -32,5 +32,9 @@ namespace zip {
     std::string Decompress(const char* data, size_t length);
     std::string Decompress(const std::string& data);
 
+    size_t GDecompress(char* dst, size_t dstlen, const char* src, size_t srclen);
+    std::string GDecompress(const char* data, size_t length);
+    std::string GDecompress(const std::string& data);
+
 } // !zip
 } // !base

@@ -107,5 +107,68 @@ namespace zip {
         return Decompress(data.c_str(), data.length());
     }
 
+    size_t GDecompress(char* dst, size_t dstlen, const char* src, size_t srclen)
+    {
+        z_stream stream;
+        int err;
+
+        stream.next_in = (z_const Bytef *)src;
+        stream.avail_in = (uInt)srclen;
+        /* Check for source > 64K on 16-bit machine: */
+        if ((uLong)stream.avail_in != srclen) return 0;
+
+        stream.next_out = (z_const Bytef *)dst;
+        stream.avail_out = dstlen;
+
+        stream.zalloc = (alloc_func)0;
+        stream.zfree = (free_func)0;
+
+        err = inflateInit2(&stream, 16 + MAX_WBITS);
+        if (err != Z_OK) return 0;
+
+        err = inflate(&stream, Z_FINISH);
+        if (err != Z_STREAM_END) {
+            inflateEnd(&stream);
+            if (err == Z_NEED_DICT || (err == Z_BUF_ERROR && stream.avail_in == 0))
+                return 0;
+            return 0;
+        }
+        auto actualSize = stream.total_out;
+
+        inflateEnd(&stream);
+        return actualSize;
+    }
+
+    std::string GDecompress(const char * data, size_t length)
+    {
+        if (length < 4)
+            return "";
+        try
+        {
+            unsigned int b[4];
+            b[0] = (unsigned int)data[length - 4] & 0x000000ff;
+            b[1] = (unsigned int)data[length - 3] & 0x000000ff;
+            b[2] = (unsigned int)data[length - 2] & 0x000000ff;
+            b[3] = (unsigned int)data[length - 1] & 0x000000ff;
+            auto size = b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24);
+            if (size == 0)
+                return "";
+            std::unique_ptr<char[]> dst(new char[size]);
+            if (!dst)
+                return "";
+            size_t actualSize = GDecompress(dst.get(), size, data, length);
+            return std::string(dst.get(), actualSize);
+        }
+        catch (...)
+        {
+            return "";
+        }
+    }
+
+    std::string GDecompress(const std::string& data)
+    {
+        return GDecompress(data.c_str(), data.length());
+    }
+
 } // !zip
 } // !base
