@@ -33,12 +33,12 @@ class Response
 public:
     ~Response() {}
 
-    static std::shared_ptr<Response> NewResponse();
+    static std::shared_ptr<Response> Create();
 
-    int GetStatus() const;
-    void SetStatus(int code);
-    std::string GetBody() const;
-    void SetBody(const std::string& body);
+    int GetStatusCode() const;
+    void SetStatusCode(int code);
+    void SetStatus(const std::string& status);
+    std::string GetStatus() const;
     std::shared_ptr<Request> GetRequest() const;
     void SetRequest(std::shared_ptr<Request> request);
 
@@ -46,8 +46,8 @@ private:
     Response() {}
 
 private:
-    int m_status;
-    std::string m_body;
+    int m_statusCode;
+    std::string m_status;
     std::shared_ptr<Request> m_request;
 };
 

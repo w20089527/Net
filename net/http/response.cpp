@@ -21,29 +21,29 @@
 namespace net {
 namespace http {
 
-std::shared_ptr<Response> Response::NewResponse()
+std::shared_ptr<Response> Response::Create()
 {
     return std::shared_ptr<Response>(new Response());
 }
 
-int Response::GetStatus() const
+int Response::GetStatusCode() const
+{
+    return m_statusCode;
+}
+
+void Response::SetStatusCode(int code)
+{
+    m_statusCode = code;
+}
+
+void Response::SetStatus(const std::string & status)
+{
+    m_status = status;
+}
+
+std::string Response::GetStatus() const
 {
     return m_status;
-}
-
-void Response::SetStatus(int code)
-{
-    m_status = code;
-}
-
-std::string Response::GetBody() const
-{
-    return m_body;
-}
-
-void Response::SetBody(const std::string & body)
-{
-    m_body = body;
 }
 
 std::shared_ptr<Request> Response::GetRequest() const
