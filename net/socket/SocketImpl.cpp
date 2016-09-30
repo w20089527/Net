@@ -82,7 +82,9 @@ bool SocketImpl::Connect(const SocketAddress& address, const std::chrono::second
             if (timeout.count() == 0)
                 break;
             int err = WSAGetLastError();
-            if (WSAEINPROGRESS != err && WSAEWOULDBLOCK != err)
+            if (WSAEINPROGRESS != err
+                && WSAEWOULDBLOCK != err
+                && WSAEISCONN != err)
                 break;
             if (!Poll(timeout, SELECT_READ | SELECT_WRITE | SELECT_ERROR))
                 break;
