@@ -30,7 +30,7 @@ public:
     ~Context() {}
 
     static std::shared_ptr<Context>
-        NewContext(
+        Create(
             std::shared_ptr<StreamSocket> connection,
             std::shared_ptr<Request> request);
 
