@@ -76,6 +76,12 @@
     <ClCompile Include="http\context.cpp">
       <Filter>http</Filter>
     </ClCompile>
+    <ClCompile Include="http\client.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="http\status.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\Socket.h">
@@ -139,6 +145,12 @@
       <Filter>http</Filter>
     </ClInclude>
     <ClInclude Include="http\context.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\client.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\status.h">
       <Filter>http</Filter>
     </ClInclude>
   </ItemGroup>
