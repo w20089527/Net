@@ -38,12 +38,15 @@ public:
     void SetHeader(const Header& header);
     void SetHeader(const std::string& key, const std::string& value);
 
+    std::string GetBody() const;
+    void SetBody(const std::string& body);
+
 protected:
     int m_protoMajor = 1;
     int m_protoMinor = 1;
     bool m_close = false;
     Header m_header;
-    
+    std::string m_body;
 };
 
 } // !namespace http

@@ -93,5 +93,15 @@ void CommonRequestResponse::SetHeader(const std::string & key, const std::string
     }
 }
 
+std::string CommonRequestResponse::GetBody() const
+{
+    return m_body;
+}
+
+void CommonRequestResponse::SetBody(const std::string & body)
+{
+    m_body = body;
+}
+
 } // !namespace http
 } // !namespace net
