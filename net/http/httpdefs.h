@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright(c) 2015 huan.wang
+// Copyright(c) 2015-2016 huan.wang
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files(the "Software"),
@@ -24,6 +24,14 @@
 
 namespace net {
 namespace http {
+    struct HashCaseInsensitive
+    {
+        std::size_t operator() (const std::string& key) const
+        {
+            return std::hash<std::string>{}(base::strings::ToLower(key));
+        }
+    };
+
     struct KeyEqualCaseInsensitive
     {
         bool operator() (const std::string& lhs, const std::string& rhs) const
@@ -31,7 +39,7 @@ namespace http {
             return base::strings::Equal(lhs, rhs, true);
         }
     };
-    typedef std::unordered_multimap<std::string, std::string, std::hash<std::string>, KeyEqualCaseInsensitive> Header;
+    typedef std::unordered_multimap<std::string, std::string, HashCaseInsensitive, KeyEqualCaseInsensitive> Header;
     typedef std::unordered_multimap<std::string, std::string> Values;
 } // !namespace http
 } // !namespace net
