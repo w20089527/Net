@@ -39,8 +39,8 @@ public:
     void SetScheme(const std::string& strScheme) { m_strScheme = strScheme; }
     std::string GetOpaque() const { return m_strOpaque; }
     void SetOpaque(const std::string& strOpaque) { m_strOpaque = strOpaque; }
-    std::string GetUserName() const { return m_strUserName; }
-    void SetUserName(const std::string& strUserName) { m_strUserName = strUserName; }
+    std::string GetUser() const { return m_strUserName; }
+    void SetUser(const std::string& strUserName) { m_strUserName = strUserName; }
     std::string GetPassword() const { return m_strPassword; }
     void SetPassword(const std::string& strPassword) { m_strPassword = strPassword; }
     std::string GetHost() const { return m_strHost; }
@@ -65,6 +65,9 @@ public:
 
     // Return the escaped path.
     std::string EscapedPath() const;
+
+    // RequestURI returns the request uri.
+    std::string RequestURI() const;
 
     // Resolve a URI reference to an absolute URI from an absolute base URI.
     // The |ref| can be absolute or relative. If |ref| is absolute, we just copy it.

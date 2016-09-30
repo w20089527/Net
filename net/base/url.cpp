@@ -142,6 +142,11 @@ Url Url::Parse(const std::string& strRawUrl)
         std::string strRest;
         if (!ParseScheme(strPrefix, url.m_strScheme, strRest))
             break;
+        if (url.GetScheme() == "http")
+            url.SetPort(80);
+        else if (url.GetScheme() == "https")
+            url.SetPort(443);
+
         if (strRest.empty())
             break;
         
@@ -226,6 +231,28 @@ std::string Url::EscapedPath() const
     return base::EscapeUrl(m_strPath);
 }
 
+std::string Url::RequestURI() const
+{
+    std::string uri = m_strOpaque;
+    if (uri.empty())
+    {
+        uri = EscapedPath();
+        if (uri.empty())
+        {
+            return "/";
+        }
+    }
+    else if (base::strings::StartsWith(uri, "//"))
+    {
+        uri = m_strScheme + ":" + uri;
+    }
+    if (!m_strRawQuery.empty())
+    {
+        uri += "?" + m_strRawQuery;
+    }
+    return uri;
+}
+
 Url Url::ResolveReference(const Url& ref) const
 {
     if (ref.IsAbsolute())
@@ -233,7 +260,7 @@ Url Url::ResolveReference(const Url& ref) const
 
     Url url;
     url.SetScheme(m_strScheme);
-    url.SetUserName(m_strUserName);
+    url.SetUser(m_strUserName);
     url.SetPassword(m_strPassword);
     url.SetHost(m_strHost);
     url.SetPort(m_iPort);
