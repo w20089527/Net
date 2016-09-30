@@ -36,8 +36,8 @@ class Request
 public:
     ~Request() {}
 
-    // NewRequest creates a request based on a method, URL and optional body.
-    static std::shared_ptr<Request> NewRequest(const std::string& method, const std::string& url);
+    // Create news a request based on a method, URL and optional body.
+    static std::shared_ptr<Request> Create(const std::string& method, const std::string& url, const std::string& body = "");
 
     std::string GetMethod() const;
     void SetMethod(const std::string& method);

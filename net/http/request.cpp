@@ -99,9 +99,10 @@ void ParseQuery(const std::string& rawQuery, Values& form)
 
 } // !namespace anonymous
 
-std::shared_ptr<Request> Request::NewRequest(
+std::shared_ptr<Request> Request::Create(
     const std::string & method,
-    const std::string & url)
+    const std::string & url,
+    const std::string& body)
 {
     std::string validMethod(method);
     if (base::strings::TrimSpace(validMethod).empty())
@@ -122,6 +123,10 @@ std::shared_ptr<Request> Request::NewRequest(
     request->SetProto(1, 1);
     request->SetUrl(u);
     request->SetHost(u.HostPort());
+    request->SetBody(body);
+    request->SetHeader("Host", u.GetHost());
+    request->SetHeader("Accept-Encoding", "gzip, deflate");
+    request->SetHeader("Connection", "Keep-Alive");
     return request;
 }
 
