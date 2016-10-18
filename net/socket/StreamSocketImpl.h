@@ -30,6 +30,7 @@ public:
     virtual ~StreamSocketImpl();
 
     virtual int Send(const char* buffer, int length, int flags = 0);
+    virtual int Receive(char* buffer, int length, int flags = 0);
 };
 
 } //!net

@@ -55,4 +55,19 @@ int StreamSocketImpl::Send(const char* buffer, int length, int flags /*= 0*/)
     return sent;
 }
 
+int StreamSocketImpl::Receive(char * buffer, int length, int flags /*= 0*/)
+{
+    int len = -1;
+    while (true)
+    {
+        len = SocketImpl::Receive(buffer, length, flags);
+        int err = WSAGetLastError();
+        if (len < 0 && (WSAEWOULDBLOCK == err || WSAEINPROGRESS == err))
+            std::this_thread::yield();
+        else
+            break;
+    }
+    return len;
+}
+
 } //!net
