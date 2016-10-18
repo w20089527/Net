@@ -32,12 +32,25 @@ class Client
 public:
     ~Client() {}
 
-    static std::shared_ptr<Client> Create(const std::chrono::seconds timeout = std::chrono::seconds(300));
+    // Create makes an instance of Client
+    // |timeout| represents the socket connect timeout.
+    static std::shared_ptr<Client> Create(const std::chrono::seconds timeout = std::chrono::seconds(60));
 
+    // Do sends a request to server.
     std::shared_ptr<Response> Do(std::shared_ptr<Request> request);
+
+    // Get does a GET request for the specified url.
     std::shared_ptr<Response> Get(const std::string& url);
+
+    // Head does a HEAD request.
     std::shared_ptr<Response> Head(const std::string& url);
+
+    // Post issues a POST to the specified url.
+    // |bodyType| represents the Content-Type.
+    // |body| is the content to send.
     std::shared_ptr<Response> Post(const std::string& url, const std::string& bodyType, const std::string& body);
+
+    // PostForm sends the key-value pairs to a server.
     std::shared_ptr<Response> PostForm(const std::string& url, const Values& data);
 
 private:

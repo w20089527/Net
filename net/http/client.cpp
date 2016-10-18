@@ -271,6 +271,7 @@ end:
 
 std::string ExtractOneChunked(StreamSocket& s, std::string& remainingBuffer)
 {
+    std::string preb(remainingBuffer);
     std::string message;
     int needSize = 0;
     auto pos = remainingBuffer.find('\n');
@@ -295,6 +296,7 @@ std::string ExtractOneChunked(StreamSocket& s, std::string& remainingBuffer)
     {
         try
         {
+            // std::stoi works for "xxx/r".
             auto lineSize = std::stoi(remainingBuffer.substr(0, pos), 0, 16);
             remainingBuffer.erase(0, pos + 1);
             if (lineSize <= 0)
@@ -348,16 +350,27 @@ std::string ExtractOneChunked(StreamSocket& s, std::string& remainingBuffer)
     if (needSize <= 0)
         return "";
     std::string chunkedSize;
-    char* buffer = new char[needSize + 2]; // include '\r\n'
-
-    int len = s.Receive(buffer, needSize);
-    if (len <= 0)
+    std::unique_ptr<char[]> buffer(new char[needSize + 2]); // include '\r\n'
+    
+    message = remainingBuffer;
+    int remainSize = needSize + 2;
+    do 
     {
-        delete[]buffer;
-        return "";
-    };
-    message = remainingBuffer + std::string(buffer, needSize);
-    delete[]buffer;
+        int len = s.Receive(buffer.get(), remainSize);
+        if (len < 0)
+            return "";
+        if (len == 0)
+            continue;
+        message += std::string(buffer.get(), len);
+        remainSize -= len;
+        if (remainSize == 0)
+            break;;
+    } while (true);
+
+    // Remove "\r\n".
+    message.pop_back();
+    message.pop_back();
+    remainingBuffer.clear();
     return message;
 }
 
@@ -374,7 +387,11 @@ void ExtractChunkedMessage(
             break;
         message += chunked;
     } while (true);
-    response->SetBody(message);
+
+    if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
+        response->SetBody(base::zip::GDecompress(message));
+    else
+        response->SetBody(message);
 }
 
 std::shared_ptr<Response> ResponseReceived(StreamSocket& s, std::shared_ptr<Request> request)
@@ -450,11 +467,20 @@ std::shared_ptr<Response> ResponseReceived(StreamSocket& s, std::shared_ptr<Requ
             else
             {
                 std::unique_ptr<char[]> buffer(new char[len]);
-                int recvBytes = s.Receive(buffer.get(), len);
-                if (recvBytes != len)
-                    break;
-                
-                body = remainingBuffer + std::string(buffer.get(), len);
+                int remainSize = len;
+                body = remainingBuffer;
+                do 
+                {
+                    int recvBytes = s.Receive(buffer.get(), remainSize);
+                    if (recvBytes < 0)
+                        return response;
+                    if (recvBytes == 0)
+                        continue;
+                    body += std::string(buffer.get(), recvBytes);
+                    remainSize -= recvBytes;
+                    if (0 == remainSize)
+                        break;
+                } while (true);
             }
             if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
                 response->SetBody(base::zip::GDecompress(body));
@@ -473,7 +499,7 @@ std::shared_ptr<Response> ResponseReceived(StreamSocket& s, std::shared_ptr<Requ
 
 } // !namespace anonymous
 
-std::shared_ptr<Client> Client::Create(const std::chrono::seconds timeout /*= std::chrono::seconds(30)*/)
+std::shared_ptr<Client> Client::Create(const std::chrono::seconds timeout /*= std::chrono::seconds(60)*/)
 {
     return std::shared_ptr<Client>(new Client(timeout));
 }
@@ -537,13 +563,23 @@ std::shared_ptr<Response> Client::Send(std::shared_ptr<Request> request)
         struct in_addr **addr_list = (struct in_addr **)h->h_addr_list;
         host = inet_ntoa(*addr_list[0]);
     }
-    m_connection.Close();
-    if (!m_connection.Connect(
-        SocketAddress(host, (uint16_t)request->GetUrl().GetPort()),
-        m_timeout))
-        return nullptr;
-    m_connection.SetReuseAddress(true);
-    m_connection.SetNoDelay(true);
+    uint16_t port = (uint16_t)request->GetUrl().GetPort();
+    do 
+    {
+        SocketAddress remoteAddress;
+        if (m_connection.GetNativeHandle() != INVALID_SOCKET)
+            remoteAddress = m_connection.GetForeignAddress();
+        if (remoteAddress.GetHost() == host && remoteAddress.GetPort() == port)
+            break;
+        m_connection.Close();
+        if (!m_connection.Connect(
+            SocketAddress(host, port),
+            m_timeout))
+            return nullptr;
+        m_connection.SetReuseAddress(true);
+        m_connection.SetNoDelay(true);
+    } while (0);
+    
     int len = m_connection.Send((const void*)message.c_str(), message.length());
     if (len != (int)message.length())
     {
