@@ -33,9 +33,16 @@ namespace TestSuite
         TEST_METHOD(Test_Get)
         {
             auto c = net::http::Client::Create();
-            auto response = c->Get("http://127.0.0.1:8787/");
-            if (!response)
-                return;
+            auto response = c->Get("http://www.cppreference.com/");
+            Assert::IsTrue(response != nullptr);
+            Logger::WriteMessage(response->GetBody().c_str());
+        }
+
+        TEST_METHOD(Test_Get_Chunked)
+        {
+            auto c = net::http::Client::Create();
+            auto response = c->Get("http://www.163.com/");
+            Assert::IsTrue(response != nullptr);
             Logger::WriteMessage(response->GetBody().c_str());
         }
     };
