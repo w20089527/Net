@@ -154,6 +154,7 @@
     <ClCompile Include="http\client.cpp" />
     <ClCompile Include="http\common.cpp" />
     <ClCompile Include="http\context.cpp" />
+    <ClCompile Include="http\reader.cpp" />
     <ClCompile Include="http\request.cpp" />
     <ClCompile Include="http\response.cpp" />
     <ClCompile Include="http\status.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="http\context.h" />
     <ClInclude Include="http\cookie.h" />
     <ClInclude Include="http\httpdefs.h" />
+    <ClInclude Include="http\reader.h" />
     <ClInclude Include="http\request.h" />
     <ClInclude Include="http\response.h" />
     <ClInclude Include="http\status.h" />
