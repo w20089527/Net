@@ -36,6 +36,10 @@ namespace TestSuite
             auto response = c->Get("http://www.cppreference.com/");
             Assert::IsTrue(response != nullptr);
             Logger::WriteMessage(response->GetBody().c_str());
+
+            response = c->Get("http://en.cppreference.com/w/cpp/language/ascii");
+            Assert::IsTrue(response != nullptr);
+            Logger::WriteMessage(response->GetBody().c_str());
         }
 
         TEST_METHOD(Test_Get_Chunked)
