@@ -134,369 +134,6 @@ bool IsIpV4(const std::string& host)
     return true;
 }
 
-int LocateLine(const char* buffer, size_t offset, size_t len)
-{
-    if (!buffer || offset >= len)
-        return -1;
-    for (size_t  i = offset; i < len; ++i)
-    {
-        if ('\n' == buffer[i])
-        {
-            return i;
-        }
-            
-    }
-    return -1;
-}
-
-std::string ExtractStartLine(StreamSocket& s, std::string& remainingBuffer)
-{
-    char buffer[1024];
-    std::string message;
-    do
-    {
-        int len = s.Receive(buffer, 1024);
-        if (len <= 0)
-            return "";
-
-        int linePos = LocateLine(buffer, 0, len);
-        if (linePos < 0)
-        {
-            message += std::string(buffer, len);
-            continue;
-        }
-        message += std::string(buffer, linePos);
-        remainingBuffer = std::string(buffer + linePos + 1, len - linePos - 1);
-        break;
-    } while (true);
-    if (!message.empty() && '\r' == message.back())
-        message.pop_back();
-    return message;
-}
-
-std::vector<std::string> ExtractHeaders(
-    StreamSocket& s,
-    std::string& remainingBuffer,
-    bool& error)
-{
-    std::vector<std::string> headers;
-    
-    std::string message;
-    auto pos = remainingBuffer.find("\r\n\r\n");
-    if (std::string::npos != pos)
-    {
-        message = remainingBuffer.substr(0, pos);
-        remainingBuffer.erase(0, pos + 4);
-        goto end;
-    }
-    else if (base::strings::StartsWith(remainingBuffer, "\r\n"))
-    {
-        remainingBuffer.erase(0, 2);
-        goto end;
-    }
-    else
-        message = remainingBuffer;
-
-    char buffer[1024];
-    bool finished = false;
-    do 
-    {
-        int len = s.Receive(buffer, 1024);
-        if (len <= 0)
-        {
-            error = true;
-            return headers;
-        }
-        int linePos = 0;
-        int lastPos = 0;
-        while (linePos >= 0)
-        {
-            linePos = LocateLine(buffer, lastPos, len);
-            if (linePos < 0)
-            {
-                message += std::string(buffer + lastPos, len - lastPos);
-                break;
-            }
-            linePos += 1;
-            message += std::string(buffer + lastPos, linePos - lastPos);
-            lastPos = linePos;
-            if (message.size() == 1 || base::strings::StartsWith(message, "\r\n"))
-            {
-                message.clear();
-                finished = true;
-                break;
-            }
-            
-            if ('\n' == message[message.length() - 2])
-            {
-                message.erase(message.length() - 2);
-                finished = true;
-                break;
-            }
-            else if (message.size() > 2
-                && '\r' == message[message.length() - 2]
-                && '\n' == message[message.length() - 3])
-            {
-                if (message.size() > 3 && '\r' == message[message.length() - 4])
-                    message.erase(message.length() - 4);
-                else
-                    message.erase(message.length() - 3);
-                finished = true;
-                break;
-            }
-        }
-        if (finished)
-        {
-            remainingBuffer = std::string(buffer + lastPos, len - lastPos);
-            break;
-        }
-    } while (true);
-
-end:
-    error = false;
-    headers = base::strings::Split(message, "\n");
-    for (auto iter = headers.begin(); iter != headers.end();)
-    {
-        if (iter->empty())
-            iter = headers.erase(iter);
-        else
-        {
-            if (iter->back() == '\r')
-                iter->pop_back();
-            ++iter;
-        }
-    }
-    return headers;
-}
-
-std::string ExtractOneChunked(StreamSocket& s, std::string& remainingBuffer)
-{
-    std::string preb(remainingBuffer);
-    std::string message;
-    int needSize = 0;
-    auto pos = remainingBuffer.find('\n');
-
-    auto RemoveLine = [&]() {
-        if (base::strings::StartsWith(remainingBuffer, "\r\n"))
-            remainingBuffer.erase(0, 2);
-        else if (remainingBuffer.size() < 2)
-        {
-            char b[2];
-            int l = s.Receive(b, 2);
-            if (l > 0)
-            {
-                remainingBuffer += std::string(b);
-                if (base::strings::StartsWith(remainingBuffer, "\r\n"))
-                    remainingBuffer.erase(0, 2);
-            }
-        }
-    };
-
-    if (pos != std::string::npos)
-    {
-        try
-        {
-            // std::stoi works for "xxx/r".
-            auto lineSize = std::stoi(remainingBuffer.substr(0, pos), 0, 16);
-            remainingBuffer.erase(0, pos + 1);
-            if (lineSize <= 0)
-                return "";
-            if (remainingBuffer.size() >= (size_t)lineSize)
-            {
-                message = remainingBuffer.substr(0, lineSize);
-                remainingBuffer.erase(0, lineSize);
-                RemoveLine();
-                return message;
-            }
-            needSize = lineSize - remainingBuffer.size();
-        }
-        catch (...)
-        {
-            return "";
-        }
-        
-    }
-    else
-    {
-        char buffer[1024];
-        int len = s.Receive(buffer, 1024);
-        if (len <= 0)
-            return "";
-        int line = LocateLine(buffer, 0, len);
-        if (line < 0)
-            return "";
-        std::string chunkedSize = remainingBuffer + std::string(buffer, line);
-        remainingBuffer = std::string(buffer + line + 1, len - line - 1);
-        try
-        {
-            auto lineSize = std::stoi(chunkedSize, 0, 16);
-            if (lineSize <= 0)
-                return "";
-            needSize = lineSize - remainingBuffer.size();
-            if (needSize <= 0)
-            {
-                message = remainingBuffer.substr(0, lineSize);
-                remainingBuffer.erase(0, lineSize);
-                RemoveLine();
-                return message;
-            }
-        }
-        catch (...)
-        {
-            return "";
-        }
-    }
-
-    if (needSize <= 0)
-        return "";
-    std::string chunkedSize;
-    std::unique_ptr<char[]> buffer(new char[needSize + 2]); // include '\r\n'
-    
-    message = remainingBuffer;
-    int remainSize = needSize + 2;
-    do 
-    {
-        int len = s.Receive(buffer.get(), remainSize);
-        if (len < 0)
-            return "";
-        if (len == 0)
-            continue;
-        message += std::string(buffer.get(), len);
-        remainSize -= len;
-        if (remainSize == 0)
-            break;;
-    } while (true);
-
-    // Remove "\r\n".
-    message.pop_back();
-    message.pop_back();
-    remainingBuffer.clear();
-    return message;
-}
-
-void ExtractChunkedMessage(
-    StreamSocket& s,
-    std::shared_ptr<Response> response,
-    std::string& remainingBuffer)
-{
-    std::string message;
-    do 
-    {
-        auto chunked = ExtractOneChunked(s, remainingBuffer);
-        if (chunked.empty())
-            break;
-        message += chunked;
-    } while (true);
-
-    if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
-        response->SetBody(base::zip::GDecompress(message));
-    else
-        response->SetBody(message);
-}
-
-std::shared_ptr<Response> ResponseReceived(StreamSocket& s, std::shared_ptr<Request> request)
-{
-    std::shared_ptr<Response> response;
-
-    std::string remainingBuffer;
-    std::string requestLine = ExtractStartLine(s, remainingBuffer);
-    auto vlist = base::strings::SplitN(requestLine, " ", 3);
-    if (vlist.size() != 3)
-        return nullptr;
-
-    // Parse the start line.
-    auto proto = base::strings::Split(vlist[0], "/");
-    if (proto.size() != 2)
-        return nullptr;
-
-    try
-    {
-        auto protoNumber = base::strings::Split(proto[1], ".");
-        int protoMajor = std::stoi(protoNumber[0]);
-        int protoMinor = 0;
-        if (protoNumber.size() == 2)
-            protoMinor = std::stoi(protoNumber[1]);
-
-        response = Response::Create();
-        response->SetRequest(request);
-        response->SetProto(protoMajor, protoMinor);
-        response->SetStatusCode(std::stoi(vlist[1]));
-        response->SetStatus(vlist[2]);
-    }
-    catch (...)
-    {
-        return nullptr;
-    }
-
-    // Parse headers.
-    bool error = false;
-    auto headers = ExtractHeaders(s, remainingBuffer, error);
-    if (error)
-        return nullptr;
-    for (auto h : headers)
-    {
-        auto kv = base::strings::SplitN(h, ":", 2);
-        if (kv.size() != 2)
-            continue;
-        response->SetHeader(base::strings::TrimSpace(kv[0]), base::strings::TrimSpace(kv[1]));
-    }
-
-    // Extract response body.
-    do 
-    {
-        if (response->GetRequest()->GetMethod() == "HEAD")
-            break;
-
-        // Chunked message.
-        if (response->GetHeader("Transfer-Encoding") == "chunked")
-        {
-            ExtractChunkedMessage(s, response, remainingBuffer);
-            break;
-        }
-
-        // Normal message.
-        auto contentLength = response->GetHeader("Content-length");
-        try
-        {
-            std::string body;
-            auto len = std::stoi(contentLength) - (int)remainingBuffer.size();
-            if (len < 0)
-                break;
-            else if (0 == len)
-                body = remainingBuffer;
-            else
-            {
-                std::unique_ptr<char[]> buffer(new char[len]);
-                int remainSize = len;
-                body = remainingBuffer;
-                do 
-                {
-                    int recvBytes = s.Receive(buffer.get(), remainSize);
-                    if (recvBytes < 0)
-                        return response;
-                    if (recvBytes == 0)
-                        continue;
-                    body += std::string(buffer.get(), recvBytes);
-                    remainSize -= recvBytes;
-                    if (0 == remainSize)
-                        break;
-                } while (true);
-            }
-            if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
-                response->SetBody(base::zip::GDecompress(body));
-            else
-                response->SetBody(body);
-        }
-        catch (...)
-        {
-            break;
-        }
-        
-    } while (0);
-    
-    return response;
-}
-
 } // !namespace anonymous
 
 std::shared_ptr<Client> Client::Create(const std::chrono::seconds timeout /*= std::chrono::seconds(60)*/)
@@ -578,6 +215,7 @@ std::shared_ptr<Response> Client::Send(std::shared_ptr<Request> request)
             return nullptr;
         m_connection.SetReuseAddress(true);
         m_connection.SetNoDelay(true);
+        m_reader.Reset(&m_connection);
     } while (0);
     
     int len = m_connection.Send((const void*)message.c_str(), message.length());
@@ -587,7 +225,7 @@ std::shared_ptr<Response> Client::Send(std::shared_ptr<Request> request)
         return nullptr;
     }
 
-    return ResponseReceived(m_connection, request);
+    return ResponseReceived(request);
 }
 
 std::shared_ptr<Response> Client::DoFollowingRedirects(std::shared_ptr<Request> request)
@@ -624,6 +262,73 @@ std::shared_ptr<Response> Client::DoFollowingRedirects(std::shared_ptr<Request> 
             return response;
         lastRequest = r;
     }
+    return response;
+}
+
+std::shared_ptr<net::http::Response> Client::ResponseReceived(std::shared_ptr<Request> request)
+{
+    std::shared_ptr<Response> response;
+
+    std::string requestLine = m_reader.ExtractStartLine();
+    auto vlist = base::strings::SplitN(requestLine, " ", 3);
+    if (vlist.size() != 3)
+        return nullptr;
+
+    // Parse the start line.
+    auto proto = base::strings::Split(vlist[0], "/");
+    if (proto.size() != 2)
+        return nullptr;
+
+    try
+    {
+        auto protoNumber = base::strings::Split(proto[1], ".");
+        int protoMajor = std::stoi(protoNumber[0]);
+        int protoMinor = 0;
+        if (protoNumber.size() == 2)
+            protoMinor = std::stoi(protoNumber[1]);
+
+        response = Response::Create();
+        response->SetRequest(request);
+        response->SetProto(protoMajor, protoMinor);
+        response->SetStatusCode(std::stoi(vlist[1]));
+        response->SetStatus(vlist[2]);
+    }
+    catch (...)
+    {
+        return nullptr;
+    }
+
+    // Parse headers.
+    bool error = false;
+    auto headers = m_reader.ExtractHeaders(error);
+    if (error)
+        return nullptr;
+    for (auto h : headers)
+    {
+        auto kv = base::strings::SplitN(h, ":", 2);
+        if (kv.size() != 2)
+            continue;
+        response->SetHeader(base::strings::TrimSpace(kv[0]), base::strings::TrimSpace(kv[1]));
+    }
+
+    // Extract response body.
+    do
+    {
+        if (response->GetRequest()->GetMethod() == "HEAD")
+            break;
+
+        // Chunked message.
+        if (response->GetHeader("Transfer-Encoding") == "chunked")
+        {
+            m_reader.ExtractChunkedMessage(response);
+            break;
+        }
+
+        // Normal message.
+        m_reader.ExtractContentMessage(response);
+
+    } while (0);
+
     return response;
 }
 

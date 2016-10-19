@@ -20,6 +20,7 @@
 
 #include <memory>
 
+#include "net/http/reader.h"
 #include "net/http/request.h"
 #include "net/http/response.h"
 #include "net/socket/StreamSocket.h"
@@ -58,10 +59,12 @@ private:
 
     std::shared_ptr<Response> Send(std::shared_ptr<Request> request);
     std::shared_ptr<Response> DoFollowingRedirects(std::shared_ptr<Request> request);
+    std::shared_ptr<Response> ResponseReceived(std::shared_ptr<Request> request);
 
 private:
     StreamSocket m_connection;
     std::chrono::seconds m_timeout;
+    Reader m_reader;
 };
 
 } // !namespace http
