@@ -85,15 +85,6 @@
     <ClCompile Include="http\reader.cpp">
       <Filter>http</Filter>
     </ClCompile>
-    <ClCompile Include="http\server.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="http\connection.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
-    <ClCompile Include="http\utils.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="socket\Socket.h">
@@ -166,18 +157,6 @@
       <Filter>http</Filter>
     </ClInclude>
     <ClInclude Include="http\reader.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="http\server.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="http\handler.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="http\connection.h">
-      <Filter>http</Filter>
-    </ClInclude>
-    <ClInclude Include="http\utils.h">
       <Filter>http</Filter>
     </ClInclude>
   </ItemGroup>

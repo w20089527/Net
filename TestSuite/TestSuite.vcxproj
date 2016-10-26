@@ -157,7 +157,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EchoServer.h" />
-    <ClInclude Include="SimpleHttpServer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UDPEchoServer.h" />
@@ -168,8 +167,6 @@
     <ClCompile Include="DatagramSocket_unittest.cpp" />
     <ClCompile Include="EchoServer.cpp" />
     <ClCompile Include="escape_unittest.cpp" />
-    <ClCompile Include="server_unittest.cpp" />
-    <ClCompile Include="SimpleHttpServer.cpp" />
     <ClCompile Include="Socket_unittest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -46,7 +46,7 @@ private:
     Response() {}
 
 private:
-    int m_statusCode = 200;
+    int m_statusCode;
     std::string m_status;
     std::shared_ptr<Request> m_request;
 };

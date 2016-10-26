@@ -20,6 +20,8 @@
 #include "CppUnitTest.h"
 #include "net/http/client.h"
 
+#include <iostream>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestSuite
