@@ -19,6 +19,7 @@
 #pragma once
 
 #include "net/http/request.h"
+#include "net/http/response.h"
 #include "net/socket/StreamSocket.h"
 
 namespace net {
@@ -35,6 +36,8 @@ public:
             std::shared_ptr<Request> request);
 
     std::shared_ptr<Request> GetRequest() const;
+    std::shared_ptr<Response> GetResponse() const;
+
     int Write(const void* buffer, int length);
     int Write(const std::string& buffer);
 
@@ -43,11 +46,11 @@ private:
         std::shared_ptr<StreamSocket> connection,
         std::shared_ptr<Request> request)
         : m_connection(connection)
-        , m_request(request) {}
+        , m_response(Response::Create()) {}
 
 private:
     std::shared_ptr<StreamSocket> m_connection;
-    std::shared_ptr<Request> m_request;
+    std::shared_ptr<Response> m_response;
 };
 
 } // !namespace http

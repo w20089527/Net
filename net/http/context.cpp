@@ -28,21 +28,36 @@ std::shared_ptr<Context> Context::Create(std::shared_ptr<StreamSocket> connectio
 
 std::shared_ptr<Request> Context::GetRequest() const
 {
-    return m_request;
+    return m_response->GetRequest();
+}
+
+std::shared_ptr<Response> Context::GetResponse() const
+{
+    return m_response;
 }
 
 int Context::Write(const void * buffer, int length)
 {
-    if (m_connection)
-    {
-        return m_connection->Send(buffer, length);
-    }
-    return -1;
+    return Write(std::string((const char*)buffer, length));
 }
 
 int Context::Write(const std::string & buffer)
 {
-    return Write((const void*)buffer.c_str(), buffer.length());
+    if (!m_connection)
+        return -1;
+
+    std::string message = m_response->GetProto() + " ";
+    message += std::to_string(m_response->GetStatusCode()) + " ";
+    message += m_response->GetStatus() + "\r\n";
+
+    m_response->SetHeader("Content-Length", std::to_string(buffer.length()));
+    auto headers = m_response->GetHeaders();
+    for (auto iter = headers.begin(); iter != headers.end(); ++iter)
+    {
+        message += iter->first + ": " + iter->second + "\r\n";
+    }
+    message += "\r\n" + buffer;
+    return m_connection->Send(message.c_str(), message.length());
 }
 
 } // !namespace http
