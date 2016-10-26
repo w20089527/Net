@@ -43,6 +43,11 @@ public:
     void ExtractChunkedMessage(std::shared_ptr<Response> response);
     void ExtractContentMessage(std::shared_ptr<Response> response);
 
+    void ExtractRequestMessage(std::shared_ptr<Request> request);
+
+protected:
+    void ExtractRawMessage(const std::string& contentLength, std::string& message);
+
 protected:
     std::string m_buffer;
     StreamSocket* m_stream = nullptr;

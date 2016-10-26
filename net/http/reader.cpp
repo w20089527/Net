@@ -18,8 +18,10 @@
 
 #include "net/http/reader.h"
 
+#include "net/base/escape.h"
 #include "net/base/strings/string_utils.h"
 #include "net/base/zip.h"
+#include "net/http/utils.h"
 
 namespace net {
 namespace http {
@@ -307,16 +309,58 @@ void Reader::ExtractContentMessage(std::shared_ptr<Response> response)
 {
     auto contentLength = response->GetHeader("Content-length");
     std::string body;
-    auto len = std::stoi(contentLength) - (int)m_buffer.size();
+    
+    ExtractRawMessage(contentLength, body);
+
+    if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
+        response->SetBody(base::zip::GDecompress(body));
+    else
+        response->SetBody(body);
+}
+
+void Reader::ExtractRequestMessage(std::shared_ptr<Request> request)
+{
+    auto contentLength = request->GetHeader("Content-length");
+    std::string body;
+
+    ExtractRawMessage(contentLength, body);
+
+    if (request->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
+        body = base::zip::GDecompress(body);
+    request->SetBody(body);
+    
+    auto contentType = request->GetHeader("Content-Type");
+    if (contentType.empty())
+        return;
+    base::strings::ToLowerSelf(contentType);
+    if (contentType.find("application/x-www-form-urlencoded") == std::string::npos)
+        return;
+    Values formValues;
+    ParseQueryForm(body, formValues);
+    request->SetPostFormValues(formValues);
+}
+
+void Reader::ExtractRawMessage(const std::string& contentLength, std::string & message)
+{
+    int len = 0;
+    try
+    {
+        len = std::stoi(contentLength) - (int)m_buffer.size();
+    }
+    catch(...)
+    {
+        return;
+    }
+    
     if (len < 0)
         return;
     else if (0 == len)
-        body = m_buffer;
+        message = m_buffer;
     else
     {
         std::unique_ptr<char[]> buffer(new char[len]);
         int remainSize = len;
-        body = m_buffer;
+        message = m_buffer;
         do
         {
             int recvBytes = m_stream->Receive(buffer.get(), remainSize);
@@ -327,16 +371,12 @@ void Reader::ExtractContentMessage(std::shared_ptr<Response> response)
             }
             if (recvBytes == 0)
                 continue;
-            body += std::string(buffer.get(), recvBytes);
+            message += std::string(buffer.get(), recvBytes);
             remainSize -= recvBytes;
             if (0 == remainSize)
                 break;
         } while (true);
     }
-    if (response->GetHeader("Content-Encoding").find("gzip") != std::string::npos)
-        response->SetBody(base::zip::GDecompress(body));
-    else
-        response->SetBody(body);
 }
 
 } // !namespace http
