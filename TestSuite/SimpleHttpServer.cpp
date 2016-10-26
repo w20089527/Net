@@ -14,38 +14,34 @@
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
 
 #include "stdafx.h"
-#include "CppUnitTest.h"
-#include "net/http/client.h"
+#include "SimpleHttpServer.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include "net/http/context.h"
+#include "net/http/handler.h"
 
-namespace TestSuite
+using namespace net::http;
+
+class SimpleHandler : public Handler
 {
-    TEST_CLASS(Http_Client_Test)
+public:
+    virtual void ServeHTTP(std::shared_ptr<Context> ctx) override
     {
-    public:
+        ctx->Write("Hello World");
+    }
+};
 
-        TEST_METHOD(Test_Get)
-        {
-            auto c = net::http::Client::Create();
-            auto response = c->Get("http://www.cppreference.com/");
-            Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
+SimpleHttpServer::~SimpleHttpServer()
+{
+    m_thread.detach();
+}
 
-            response = c->Get("http://en.cppreference.com/w/cpp/language/ascii");
-            Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
-        }
+void SimpleHttpServer::Start(uint16_t port /*= 8080*/)
+{
+    m_server = Server::Create(port);
+    m_server->SetHandler(std::make_shared<SimpleHandler>());
 
-        TEST_METHOD(Test_Get_Chunked)
-        {
-            auto c = net::http::Client::Create();
-            auto response = c->Get("http://www.163.com/");
-            Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
-        }
-    };
+    m_thread = std::thread(&Server::ListenAndServe, m_server.get());
 }

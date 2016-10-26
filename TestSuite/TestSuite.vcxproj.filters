@@ -39,6 +39,9 @@
     <ClInclude Include="UDPEchoServer.h">
       <Filter>socket</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleHttpServer.h">
+      <Filter>http</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +75,12 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="client_unittest.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleHttpServer.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="server_unittest.cpp">
       <Filter>http</Filter>
     </ClCompile>
   </ItemGroup>

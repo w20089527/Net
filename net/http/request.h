@@ -42,7 +42,7 @@ public:
     std::string GetMethod() const;
     void SetMethod(const std::string& method);
 
-    const Url& GetUrl();
+    Url& GetUrl();
     void SetUrl(const Url& url);
 
     std::string GetHost() const;
@@ -71,10 +71,10 @@ public:
     void SetBasicAuth(const std::string& username, const std::string& password);
 
     // SetForm keeps the query string parameters.
-    void SetForm(const Values& form);
+    void SetFormValues(const Values& form);
 
     // SetPostForm keeps the the named component of POST or PUT request body.
-    void SetPostForm(const Values& form);
+    void SetPostFormValues(const Values& form);
 
     // FormValue returns the first value from the named component of the query.
     // POST and PUT body parameters take precedence over URL query string values.

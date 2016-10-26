@@ -18,38 +18,18 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 
-#include "net/http/common.h"
-#include "net/http/request.h"
+#include "net/http/httpdefs.h"
 
 namespace net {
 namespace http {
 
-class Response
-    : public CommonRequestResponse
-{
-public:
-    ~Response() {}
+void ParseQueryForm(const std::string& query, Values& formValues);
+Values ParseQueryForm(const std::string& query);
 
-    static std::shared_ptr<Response> Create();
-
-    int GetStatusCode() const;
-    void SetStatusCode(int code);
-    void SetStatus(const std::string& status);
-    std::string GetStatus() const;
-    std::shared_ptr<Request> GetRequest() const;
-    void SetRequest(std::shared_ptr<Request> request);
-
-private:
-    Response() {}
-
-private:
-    int m_statusCode = 200;
-    std::string m_status;
-    std::shared_ptr<Request> m_request;
-};
+void ParseHeader(const std::vector<std::string>& rawHeaderList, Header& header);
+Header ParseHeader(const std::vector<std::string>& rawHeaderList);
 
 } // !namespace http
 } // !namespace net
