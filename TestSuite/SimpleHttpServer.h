@@ -18,38 +18,18 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
+#include <thread>
 
-#include "net/http/common.h"
-#include "net/http/request.h"
+#include "net/http/server.h"
 
-namespace net {
-namespace http {
-
-class Response
-    : public CommonRequestResponse
+class SimpleHttpServer
 {
 public:
-    ~Response() {}
+    ~SimpleHttpServer();
 
-    static std::shared_ptr<Response> Create();
-
-    int GetStatusCode() const;
-    void SetStatusCode(int code);
-    void SetStatus(const std::string& status);
-    std::string GetStatus() const;
-    std::shared_ptr<Request> GetRequest() const;
-    void SetRequest(std::shared_ptr<Request> request);
+    void Start(uint16_t port = 8080);
 
 private:
-    Response() {}
-
-private:
-    int m_statusCode = 200;
-    std::string m_status;
-    std::shared_ptr<Request> m_request;
+    std::shared_ptr<net::http::Server> m_server;
+    std::thread m_thread;
 };
-
-} // !namespace http
-} // !namespace net

@@ -18,34 +18,26 @@
 
 #include "stdafx.h"
 #include "CppUnitTest.h"
+
+#include "SimpleHttpServer.h"
 #include "net/http/client.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestSuite
 {
-    TEST_CLASS(Http_Client_Test)
+    TEST_CLASS(Http_Server_Test)
     {
     public:
-
-        TEST_METHOD(Test_Get)
+        TEST_METHOD(Test_ListenAndServe)
         {
-            auto c = net::http::Client::Create();
-            auto response = c->Get("http://www.cppreference.com/");
-            Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
+            SimpleHttpServer server;
+            server.Start();
 
-            response = c->Get("http://en.cppreference.com/w/cpp/language/ascii");
+            auto client = net::http::Client::Create();
+            auto response = client->Get("http://127.0.0.1:8080");
             Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
-        }
-
-        TEST_METHOD(Test_Get_Chunked)
-        {
-            auto c = net::http::Client::Create();
-            auto response = c->Get("http://www.163.com/");
-            Assert::IsTrue(response != nullptr);
-            Logger::WriteMessage(response->GetBody().c_str());
+            Assert::IsTrue(response->GetBody() == "Hello World");
         }
     };
 }

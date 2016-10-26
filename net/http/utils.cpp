@@ -16,40 +16,51 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // 
 
-#pragma once
+#include "net/http/utils.h"
 
-#include <memory>
-#include <string>
-
-#include "net/http/common.h"
-#include "net/http/request.h"
+#include "net/base/escape.h"
 
 namespace net {
 namespace http {
 
-class Response
-    : public CommonRequestResponse
+void ParseQueryForm(const std::string & query, Values & formValues)
 {
-public:
-    ~Response() {}
+    auto kvpairs = base::strings::Split(query, "&");
+    for (auto kv : kvpairs)
+    {
+        auto pair = base::strings::SplitN(kv, "=", 2);
+        auto k = base::strings::TrimSpace(pair[0]);
+        if (k.empty())
+            continue;
+        formValues.emplace(k, pair.size() == 2 ? base::Unescape(pair[1]) : "");
+    }
+}
 
-    static std::shared_ptr<Response> Create();
+Values ParseQueryForm(const std::string & query)
+{
+    Values formValues;
+    ParseQueryForm(query, formValues);
+    return formValues;
+}
 
-    int GetStatusCode() const;
-    void SetStatusCode(int code);
-    void SetStatus(const std::string& status);
-    std::string GetStatus() const;
-    std::shared_ptr<Request> GetRequest() const;
-    void SetRequest(std::shared_ptr<Request> request);
+void ParseHeader(const std::vector<std::string>& rawHeaderList, Header & header)
+{
+    for (auto h : rawHeaderList)
+    {
+        auto kv = base::strings::SplitN(h, ":", 2);
+        auto k = base::strings::TrimSpace(kv[0]);
+        if (k.empty())
+            continue;
+        header.emplace(k, kv.size() == 2 ? base::strings::TrimSpace(kv[1]) : "");
+    }
+}
 
-private:
-    Response() {}
-
-private:
-    int m_statusCode = 200;
-    std::string m_status;
-    std::shared_ptr<Request> m_request;
-};
+Header ParseHeader(const std::vector<std::string>& rawHeaderList)
+{
+    Header h;
+    ParseHeader(rawHeaderList, h);
+    return h;
+}
 
 } // !namespace http
 } // !namespace net

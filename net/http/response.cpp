@@ -17,6 +17,7 @@
 // 
 
 #include "net/http/response.h"
+#include "net/http/status.h"
 
 namespace net {
 namespace http {
@@ -38,12 +39,16 @@ void Response::SetStatusCode(int code)
 
 void Response::SetStatus(const std::string & status)
 {
-    m_status = status;
+    if (!base::strings::TrimSpace(status).empty())
+        m_status = status;
 }
 
 std::string Response::GetStatus() const
 {
-    return m_status;
+    if (!m_status.empty())
+        return m_status;
+    else
+        return StatusText((Status)m_statusCode);
 }
 
 std::shared_ptr<Request> Response::GetRequest() const

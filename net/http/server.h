@@ -18,37 +18,47 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 
-#include "net/http/common.h"
-#include "net/http/request.h"
+#include "net/http/handler.h"
+#include "net/socket/ServerSocket.h"
+#include "net/socket/SocketAddress.h"
 
 namespace net {
 namespace http {
 
-class Response
-    : public CommonRequestResponse
+class Server
 {
 public:
-    ~Response() {}
+    ~Server() {}
 
-    static std::shared_ptr<Response> Create();
+protected:
+    Server(const SocketAddress& address);
 
-    int GetStatusCode() const;
-    void SetStatusCode(int code);
-    void SetStatus(const std::string& status);
-    std::string GetStatus() const;
-    std::shared_ptr<Request> GetRequest() const;
-    void SetRequest(std::shared_ptr<Request> request);
+public:
+    static std::shared_ptr<Server> Create(uint16_t port);
+    static std::shared_ptr<Server> Create(const std::string& address);
+    static std::shared_ptr<Server> Create(const SocketAddress& address);
+
+    std::chrono::seconds GetReadTimeout() const;
+    void SetReadTimeout(std::chrono::seconds timeout);
+    std::chrono::seconds GetWriteTimeout() const;
+    void SetWriteTimeout(std::chrono::seconds timeout);
+
+    std::shared_ptr<Handler> GetHandler() const;
+    void SetHandler(std::shared_ptr<Handler> handler);
+
+    bool ListenAndServe();
+
+protected:
+    void Serve(std::shared_ptr<StreamSocket> s);
 
 private:
-    Response() {}
-
-private:
-    int m_statusCode = 200;
-    std::string m_status;
-    std::shared_ptr<Request> m_request;
+    SocketAddress m_address;
+    ServerSocket m_ss;
+    std::chrono::seconds m_readTimeout;
+    std::chrono::seconds m_writeTimeout;
+    std::shared_ptr<Handler> m_handler;
 };
 
 } // !namespace http

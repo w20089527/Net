@@ -79,24 +79,6 @@ std::vector<std::shared_ptr<Cookie>> ParseCookies(
     return cookies;
 } // !ParseCookies
 
-void ParseQuery(const std::string& rawQuery, Values& form)
-{
-    auto vlist = base::strings::Split(rawQuery, "&");
-    for (auto item : vlist)
-    {
-        auto kv = base::strings::SplitN(item, "=", 2);
-        if (kv.size() == 0)
-            continue;
-        auto key = base::strings::TrimSpace(kv[0]);
-        if (key.empty())
-            continue;
-        std::string value;
-        if (kv.size() == 2)
-            value = base::strings::TrimSpace(kv[1]);
-        form.emplace(key, value);
-    }
-} // !ParseQuery
-
 } // !namespace anonymous
 
 std::shared_ptr<Request> Request::Create(
@@ -118,6 +100,7 @@ std::shared_ptr<Request> Request::Create(
     {
         return nullptr;
     }
+
     std::shared_ptr<Request> request(new Request());
     request->SetMethod(validMethod);
     request->SetProto(1, 1);
@@ -140,7 +123,7 @@ void Request::SetMethod(const std::string & method)
     m_method = base::strings::ToUpper(method);
 }
 
-const Url & Request::GetUrl()
+Url & Request::GetUrl()
 {
     return m_url;
 }
@@ -233,12 +216,12 @@ void Request::SetBasicAuth(const std::string & username, const std::string & pas
     SetHeader("Authorization", "Basic " + value);
 }
 
-void Request::SetForm(const Values & form)
+void Request::SetFormValues(const Values & form)
 {
     m_form = form;
 }
 
-void Request::SetPostForm(const Values & form)
+void Request::SetPostFormValues(const Values & form)
 {
     m_postForm = form;
 }
