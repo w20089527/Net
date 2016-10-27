@@ -30,6 +30,12 @@ class Context
 public:
     ~Context() {}
 
+private:
+    Context(
+        std::shared_ptr<StreamSocket> connection,
+        std::shared_ptr<Request> request);
+
+public:
     static std::shared_ptr<Context>
         Create(
             std::shared_ptr<StreamSocket> connection,
@@ -40,13 +46,6 @@ public:
 
     int Write(const void* buffer, int length);
     int Write(const std::string& buffer);
-
-private:
-    Context(
-        std::shared_ptr<StreamSocket> connection,
-        std::shared_ptr<Request> request)
-        : m_connection(connection)
-        , m_response(Response::Create()) {}
 
 private:
     std::shared_ptr<StreamSocket> m_connection;

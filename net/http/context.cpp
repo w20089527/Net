@@ -21,6 +21,13 @@
 namespace net {
 namespace http {
 
+Context::Context(std::shared_ptr<StreamSocket> connection, std::shared_ptr<Request> request)
+    : m_connection(connection)
+{
+    m_response = Response::Create();
+    m_response->SetRequest(request);
+}
+
 std::shared_ptr<Context> Context::Create(std::shared_ptr<StreamSocket> connection, std::shared_ptr<Request> request)
 {
     return std::shared_ptr<Context>(new Context(connection, request));
