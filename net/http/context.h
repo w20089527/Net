@@ -47,9 +47,12 @@ public:
     int Write(const void* buffer, int length);
     int Write(const std::string& buffer);
 
+    void EnableGZip(bool enabled = true);
+
 private:
     std::shared_ptr<StreamSocket> m_connection;
     std::shared_ptr<Response> m_response;
+    bool m_enableGZip = false;
 };
 
 } // !namespace http

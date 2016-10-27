@@ -18,6 +18,8 @@
 
 #include "net/http/context.h"
 
+#include "net/base/zip.h"
+
 namespace net {
 namespace http {
 
@@ -57,14 +59,30 @@ int Context::Write(const std::string & buffer)
     message += std::to_string(m_response->GetStatusCode()) + " ";
     message += m_response->GetStatus() + "\r\n";
 
-    m_response->SetHeader("Content-Length", std::to_string(buffer.length()));
+    std::string gzipBuffer;
+    if (m_enableGZip)
+    {
+        gzipBuffer = base::zip::GCompress(buffer);
+        m_response->SetHeader("Content-Encoding", "gzip");
+        m_response->SetHeader("Content-Length", std::to_string(gzipBuffer.length()));
+    }
+    else
+        m_response->SetHeader("Content-Length", std::to_string(buffer.length()));
     auto headers = m_response->GetHeaders();
     for (auto iter = headers.begin(); iter != headers.end(); ++iter)
     {
         message += iter->first + ": " + iter->second + "\r\n";
     }
-    message += "\r\n" + buffer;
+    if (m_enableGZip)
+        message += "\r\n" + gzipBuffer;
+    else
+        message += "\r\n" + buffer;
     return m_connection->Send(message.c_str(), message.length());
+}
+
+void Context::EnableGZip(bool enabled)
+{
+    m_enableGZip = enabled;
 }
 
 } // !namespace http
