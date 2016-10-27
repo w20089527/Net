@@ -107,6 +107,62 @@ namespace zip {
         return Decompress(data.c_str(), data.length());
     }
 
+    size_t GCompress(char * dst, size_t dstLength, const char * src, size_t srcLength)
+    {
+        z_stream stream;
+        int err;
+
+        stream.next_in = (z_const Bytef *)src;
+        stream.avail_in = (uInt)srcLength;
+#ifdef MAXSEG_64K
+        /* Check for source > 64K on 16-bit machine: */
+        if ((uLong)stream.avail_in != srcLength) return 0;
+#endif
+        stream.next_out = (Bytef*)dst;
+        stream.avail_out = dstLength;
+        if ((uLong)stream.avail_out != dstLength) return 0;
+
+        stream.zalloc = (alloc_func)0;
+        stream.zfree = (free_func)0;
+        stream.opaque = (voidpf)0;
+
+        err = deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 16 + MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+        if (err != Z_OK) return 0;
+
+        err = deflate(&stream, Z_FINISH);
+        if (err != Z_STREAM_END) {
+            deflateEnd(&stream);
+            return 0;
+        }
+        auto clen = stream.total_out;
+
+        err = deflateEnd(&stream);
+        if (err != Z_OK)
+            return 0;
+        return clen;
+    }
+
+    std::string GCompress(const char * data, size_t length)
+    {
+        assert(data && length);
+        uLong dstLen = deflateBound(Z_NULL, length);
+        if (dstLen <= 0)
+            return "";
+        dstLen += 18;
+        std::unique_ptr<char[]> dst(new char[dstLen]);
+        if (!dst)
+            return "";
+        auto compressLen = GCompress(dst.get(), dstLen, data, length);
+        if (compressLen <= 0)
+            return "";
+        return std::string(dst.get(), compressLen);
+    }
+
+    std::string GCompress(const std::string & data)
+    {
+        return GCompress(data.c_str(), data.length());
+    }
+
     size_t GDecompress(char* dst, size_t dstlen, const char* src, size_t srclen)
     {
         z_stream stream;
