@@ -151,3 +151,34 @@ The Client provides **_Get_**, **_Head_**, **_Post_**, **_PostForm_** and **_Do_
 We can choose one of them to do what we want. 
 
 Currently, we haven't supplied **~~HTTPS~~** service.
+
+### HTTP Server Example
+To build a http server, what we can do is like follows:
+```cpp
+#include <iostream>
+
+#include "net/http/handler.h"
+#include "net/http/server.h"
+
+using namespace net::http;
+
+class SimpleHttpHandler : public Handler
+{
+public:
+    virtual void ServeHTTP(std::shared_ptr<Context> ctx) override
+    {
+        std::cout << "Received Url: " << ctx->GetRequest()->GetUrl().ToString() << std::endl;
+        ctx->Write("Hello World");
+    }
+};
+
+int main()
+{
+    auto server = Server::Create(8080);
+    server->SetHandler(std::make_shared<SimpleHttpHandler>());
+    server->ListenAndServe();
+    return 0;
+}
+```
+
+Currently, we haven't supplied **~~HTTPS~~** service.
