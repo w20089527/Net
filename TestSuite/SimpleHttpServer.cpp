@@ -29,7 +29,6 @@ class SimpleHandler : public Handler
 public:
     virtual void ServeHTTP(std::shared_ptr<Context> ctx) override
     {
-        ctx->EnableGZip();
         ctx->Write("Hello World");
     }
 };

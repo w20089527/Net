@@ -44,15 +44,14 @@ public:
     std::shared_ptr<Request> GetRequest() const;
     std::shared_ptr<Response> GetResponse() const;
 
+    int WriteHeader();
     int Write(const void* buffer, int length);
     int Write(const std::string& buffer);
-
-    void EnableGZip(bool enabled = true);
 
 private:
     std::shared_ptr<StreamSocket> m_connection;
     std::shared_ptr<Response> m_response;
-    bool m_enableGZip = false;
+    bool m_wroteHeader = false;
 };
 
 } // !namespace http

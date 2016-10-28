@@ -45,6 +45,27 @@ std::shared_ptr<Response> Context::GetResponse() const
     return m_response;
 }
 
+int Context::WriteHeader()
+{
+    if (!m_connection)
+        return -1;
+
+    std::string message = m_response->GetProto() + " ";
+    message += std::to_string(m_response->GetStatusCode()) + " ";
+    message += m_response->GetStatus() + "\r\n";
+
+    auto headers = m_response->GetHeaders();
+    for (auto iter = headers.begin(); iter != headers.end(); ++iter)
+    {
+        message += iter->first + ": " + iter->second + "\r\n";
+    }
+    message += "\r\n";
+    int len = m_connection->Send(message.c_str(), message.length());
+    if (len == (int)message.length())
+        m_wroteHeader = true;
+    return len;
+}
+
 int Context::Write(const void * buffer, int length)
 {
     return Write(std::string((const char*)buffer, length));
@@ -55,34 +76,23 @@ int Context::Write(const std::string & buffer)
     if (!m_connection)
         return -1;
 
-    std::string message = m_response->GetProto() + " ";
-    message += std::to_string(m_response->GetStatusCode()) + " ";
-    message += m_response->GetStatus() + "\r\n";
-
-    std::string gzipBuffer;
-    if (m_enableGZip)
+    std::string message;
+    if (!m_wroteHeader)
     {
-        gzipBuffer = base::zip::GCompress(buffer);
-        m_response->SetHeader("Content-Encoding", "gzip");
-        m_response->SetHeader("Content-Length", std::to_string(gzipBuffer.length()));
-    }
-    else
+        message = m_response->GetProto() + " ";
+        message += std::to_string(m_response->GetStatusCode()) + " ";
+        message += m_response->GetStatus() + "\r\n";
+
         m_response->SetHeader("Content-Length", std::to_string(buffer.length()));
-    auto headers = m_response->GetHeaders();
-    for (auto iter = headers.begin(); iter != headers.end(); ++iter)
-    {
-        message += iter->first + ": " + iter->second + "\r\n";
+        auto headers = m_response->GetHeaders();
+        for (auto iter = headers.begin(); iter != headers.end(); ++iter)
+        {
+            message += iter->first + ": " + iter->second + "\r\n";
+        }
+        message += "\r\n";
     }
-    if (m_enableGZip)
-        message += "\r\n" + gzipBuffer;
-    else
-        message += "\r\n" + buffer;
+    message += buffer;
     return m_connection->Send(message.c_str(), message.length());
-}
-
-void Context::EnableGZip(bool enabled)
-{
-    m_enableGZip = enabled;
 }
 
 } // !namespace http
