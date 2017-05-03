@@ -1,5 +1,5 @@
 # Net
-A C++ Net library including Socket and HTTP.
+A C++ network library including Socket and HTTP.
 
 ## Build
 To build the project, all you need to do is to open build/Net.sln with Visual Studio 2015 and build it.
